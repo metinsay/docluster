@@ -4,24 +4,20 @@ import foundation
 from enum import Enum
 from math import *
 
-class DistanceMetric(enum):
-    eucledian = lambda v1, v2 : np.sqrt(np.sum(np.square(v1 - v2), axis=1))
-    manhattan = lambda v1, v2 : np.sum(np.absolute(v1 - v2), axis=1)
-    angular = lambda v1, v2 : 2 * np.arccos(np.einsum('ij,ij->i', v1, v2) / (np.norm(p1, axis=1) * np.norm(p2, axis=1))) / np.pi
 
 class KMeans(Clusterer):
 
-    def __init__(self, k, dist_func=DistanceMetric.eucledian, eps=1e-4, doGraph=False):
+    def __init__(self, k, dist_func=DistanceMetric.eucledian, eps=1e-4, do_graph=False):
         """ Initialize K-Means Clusterer
         k - number of clusters to fit
         dist_func - the distance function
         eps - stopping criterion tolerance
-        doGraph - graphs after fitting
+        do_graph - graphs after fitting
         """
         self.k = k
         self.dist_func = dist_func
         self.eps = eps
-        self.doGraph = doGraph
+        self.do_graph = do_graph
         self.clusters = None
         self.centroids = None
         self.cost = None
@@ -32,7 +28,7 @@ class KMeans(Clusterer):
 
         returns: a tuple containing
             centroids - a KxD ndarray containing the learned means
-            cluster_assignments - an N-vector of each point's cluster index
+            clusters - an N-vector of each point's cluster index
             cost - the total cost of all the points to their assigned cluster
         """
         n, d = data.shape
@@ -58,23 +54,7 @@ class KMeans(Clusterer):
 
         self.centroids, self.clusters, self.cost = centroids, clusters, cost
 
-        if self.doGaph:
-            self.graph(data, clusters, centroids)
+        if self.do_graph:
+            Grapher().plot_voronoi(data, clusters=clusters, centroids=centroids, title="K-means clustering with k= " + str(self.k))
 
         return (centroids, clusters, cost)
-
-    def graph(self, data, clusters, centroids):
-        """ Graph Voronoi Graph
-        """
-        color_map = {0: "r", 1: "b", 2: "g", 3: "y", 4: "m", 5: "c"}
-        colors = [color_map[x % 5] for x in cluster_assign]
-        if k > 2:
-            voronoi = Voronoi(self.centroids)
-            voronoi_plot_2d(voronoi)
-        plt.title("K-means clustering with k= " + str(k))
-        ax = plt.gcf().gca()
-        ax.set_xlim((-15, 5))
-        ax.set_ylim((-15, 5))
-        plt.scatter(data[:, 0], data[:, 1], color=colors)
-        plt.scatter(clusters[:, 0], centroids[:, 1], color="k")
-        plt.show()

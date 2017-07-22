@@ -32,6 +32,7 @@ class KMeans(Clusterer):
             cost - the total cost of all the points to their assigned cluster
         """
         n, d = data.shape
+        data = np.array(list(map(lambda item: np.array(item.todense()),data)))
         # randomly choose k points as initial centroids
         centroids = data[random.sample(range(data.shape[0]), self.k)]
         clusters = np.zeros(n)
@@ -41,7 +42,7 @@ class KMeans(Clusterer):
             prev_cost = cost
             # Assigns every point to the nearest centroid
             for i in range(n):
-                tiled_data_point = np.tile(data[i], (self.k,1))
+                tiled_data_point = np.tile(data[i], (self.k, 1))
                 clusters[i] = np.argmin(self.dist_func(tiled_data_point, centroids))
             cost = 0
             # For every cluster calculates the distance to data points and add to the total cost
@@ -49,7 +50,7 @@ class KMeans(Clusterer):
                 data_with_j_assignment = (clusters == j).astype(int)
                 centroids[j] = np.dot(data_with_j_assignment, data) / sum(data_with_j_assignment)
 
-                tiled_centroid = np.tile(centroids[j], (len(data),1))
+                tiled_centroid = np.tile(centroids[j], (n, 1))
                 cost += np.dot(data_with_j_assignment, self.dist_func(data, tiled_centroid))
 
         self.centroids, self.clusters, self.cost = centroids, clusters, cost

@@ -56,6 +56,25 @@ class KMeans(Clusterer):
         self.centroids, self.clusters, self.cost = centroids, clusters, cost
 
         if self.do_plot:
-            Grapher().plot_voronoi(data ,n_clusters=self.k, clusters=clusters, centroids=centroids, title="K-means clustering with k= " + str(self.k))
+            Grapher().plot_voronoi(data, n_clusters=self.k, clusters=clusters, centroids=centroids, title="K-means clustering with k= " + str(self.k))
 
         return (centroids, clusters, cost)
+
+
+
+    def get_distances_btw_centroids(self, dist_metric=None, do_plot=False):
+
+        if not self.cost:
+            assert('You need to fit the data first in order to get distances between centroids.')
+        else:
+
+            dist_metric = dist_metric if dist_metric else self.dist_metric
+            dists = np.zeros((self.k, self.k))
+            for i, centroid in enumerate(self.centroids):
+                tiled_centroid = np.tile(centroid, (self.k, 1))
+                dists[i] = dist_metric(tiled_centroid, self.centroids)
+
+            if do_plot:
+                Grapher().plot_heat_map(list(dists), "Centroids' Distance Heat Map")
+
+            return dists

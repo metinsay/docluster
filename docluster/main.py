@@ -9,5 +9,7 @@ from utils import PCA
 # tfidf_vectorizer = TfidfVectorizer(max_df=0.6, min_df=0.0, use_idf=True, max_features=500,stop_words='english', ngram_range=(1,1), lowercase=True)
 # vec = tfidf_vectorizer.fit_transform(docs)
 
-km = KMeans(k=5, do_plot=True, dist_metric=DistanceMetric.chebyshev)
-print(km.fit(np.random.rand(1000,4)))
+km = KMeans(k=5, do_plot=True, dist_metric=DistanceMetric.eucledian)
+km.fit(np.random.rand(1000,2))
+print(km.get_distances_btw_centroids())
+print(km.get_distances_btw_centroids(dist_metric=DistanceMetric.manhattan, do_plot=True))

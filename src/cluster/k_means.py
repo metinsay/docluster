@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-import foundation
-from enum import Enum
+from utils.constants.distance_metric import DistanceMetric
 from math import *
-
+from clusterer import Clusterer
+import random
 
 class KMeans(Clusterer):
 
@@ -37,7 +37,7 @@ class KMeans(Clusterer):
         clusters = np.zeros(n)
         prev_cost = -1
         cost = 0
-        while abs(cost-prev_cost) > eps:
+        while abs(cost-prev_cost) > self.eps:
             prev_cost = cost
             # Assigns every point to the nearest centroid
             for i in range(n):

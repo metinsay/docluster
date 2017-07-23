@@ -42,26 +42,27 @@ class BisectingKMeans(KMeans):
         km = KMeans(2, dist_metric=self.dist_metric,eps=self.eps)
         n_clusters = 1
         while n_clusters < self.k:
-
+            # Find the cluster with most data points and get it's data points
             freq_dist = np.bincount(clusters.astype('int64'))
-            max_cluster = len(freq_dist) - 1
             divided_cluster_index = np.argmax(freq_dist)
             divided_cluster_data = data[clusters == divided_cluster_index]
 
+            # Run k=2 k-means on the data points n_iterations times and find the best cluster assignment
             least_cost = np.inf
             best_clusters = None
             for _ in range(self.n_iterations):
-
                 km.fit(divided_cluster_data)
                 if least_cost > km.cost:
                     least_cost = km.cost
                     best_clusters = km.clusters
 
+            # Put the cluster assignment in the main clusters array
             best_clusters[best_clusters == 1] = n_clusters
             best_clusters[best_clusters == 0] = divided_cluster_index
             np.place(clusters, clusters == divided_cluster_index, best_clusters)
             n_clusters += 1
 
+        # Find the centroids and total cost
         centroids = np.array([np.mean(data[clusters == i], axis=0) for i in range(self.k)])
         cost = np.sum(np.square(data - centroids[clusters.astype('int64')]))
 

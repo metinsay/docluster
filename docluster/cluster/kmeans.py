@@ -5,8 +5,6 @@ from math import *
 from .clusterer import Clusterer
 import random
 
-
-
 class KMeans(Clusterer):
 
     def __init__(self, k, dist_metric=DistanceMetric.eucledian, eps=1e-4, do_plot=False):
@@ -41,11 +39,13 @@ class KMeans(Clusterer):
         cost = 0
         while abs(cost-prev_cost) > self.eps:
             prev_cost = cost
+
             # Assigns every point to the nearest centroid
             for i in range(n):
                 tiled_data_point = np.tile(data[i], (self.k, 1))
                 clusters[i] = np.argmin(self.dist_metric(tiled_data_point, centroids))
             cost = 0
+
             # For every cluster calculates the distance to data points and add to the total cost
             for j in range(self.k):
                 centroids[j] = np.mean(data[clusters == j], axis=0)
@@ -65,9 +65,11 @@ class KMeans(Clusterer):
         if not self.cost:
             assert('You need to fit the data first in order to get distances between centroids.')
         else:
-
+            # Check if distance metric is changed
             dist_metric = dist_metric if dist_metric else self.dist_metric
             dists = np.zeros((self.k, self.k))
+
+            # Subtract a selected cetroid from each centroid
             for i, centroid in enumerate(self.centroids):
                 tiled_centroid = np.tile(centroid, (self.k, 1))
                 dists[i] = dist_metric(tiled_centroid, self.centroids)

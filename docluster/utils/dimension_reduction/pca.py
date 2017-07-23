@@ -4,10 +4,18 @@ from .dimension_reducer import DimensionReducer
 class PCA(DimensionReducer):
 
     def __init__(self, n_components=2):
+        """ Initialize PCA Dimension Reducer
+        n_components - number of components the data is going to reduced
+        """
         self.n_components = n_components
         self.eig_vectors = None
 
-    def reduce(self, data):
+    def fit(self, data):
+        """ Apply PCA on the data
+        data - an NxD pandas DataFrame
+
+        returns: the reduced data after applying PCA
+        """
         # Estimate the covariance matrix
         mean = np.mean(data, axis=0)
         centered_data = data - mean

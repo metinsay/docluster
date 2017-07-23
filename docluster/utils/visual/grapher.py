@@ -21,7 +21,7 @@ class Grapher(object):
         """
         if data.shape[1] > 2:
             pca = PCA(n_components=2)
-            data = pca.reduce(data)
+            data = pca.fit(data)
             centroids = pca.reduce(centroids)
 
         colors_assigns= [self.colors[int(x) % len(self.colors)] for x in clusters]

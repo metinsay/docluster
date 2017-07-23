@@ -14,4 +14,6 @@ from utils import WikiFetcher
 # km.fit(np.random.rand(1000,2))
 # print(km.get_distances_btw_centroids())
 # print(km.get_distances_btw_centroids(dist_metric=DistanceMetric.manhattan, do_plot=True))
-WikiFetcher()
+wikis = WikiFetcher(['asp.net','html'], suffix='').fetch()
+for wiki in wikis:
+    print(wiki)

@@ -6,6 +6,7 @@ from .clusterer import Clusterer
 import random
 
 
+
 class KMeans(Clusterer):
 
     def __init__(self, k, dist_metric=DistanceMetric.eucledian, eps=1e-4, do_plot=False):
@@ -47,11 +48,8 @@ class KMeans(Clusterer):
             cost = 0
             # For every cluster calculates the distance to data points and add to the total cost
             for j in range(self.k):
-                data_with_j_assignment = (clusters == j).astype(int)
-                centroids[j] = np.dot(data_with_j_assignment, data) / sum(data_with_j_assignment)
-
-                tiled_centroid = np.tile(centroids[j], (n, 1))
-                cost += np.dot(data_with_j_assignment, self.dist_metric(data, tiled_centroid))
+                centroids[j] = np.mean(data[clusters == j], axis=0)
+            cost = np.sum(np.square(data - centroids[clusters.astype('int64')]))
 
         self.centroids, self.clusters, self.cost = centroids, clusters, cost
 

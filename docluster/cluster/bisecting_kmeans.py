@@ -18,13 +18,14 @@ class BisectingKMeans(KMeans):
         do_plot - voronoi plot after fitting
         """
         self.k = k
+        self.n_iterations = n_iterations
         self.dist_metric = dist_metric
         self.eps = eps
         self.do_plot = do_plot
         self.clusters = None
         self.centroids = None
         self.cost = None
-        self.n_iterations = n_iterations
+
 
     def fit(self, data):
         """ Run the bisecting k-means algorithm

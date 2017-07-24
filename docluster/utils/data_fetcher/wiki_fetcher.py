@@ -3,7 +3,7 @@ from ..constants.language import Language
 import requests
 
 class WikiFetcher(DataFetcher):
-    def __init__(self, pages, suffix='', language=Language.turkish, do_open=False):
+    def __init__(self, pages, suffix='', language=Language.english, do_open=False):
 
         self.pages = pages
         self.suffix = suffix

@@ -22,6 +22,7 @@ class Preprocessor(object):
         self.lemmatize = lemmatize
 
         self.tokens = None
+        self.vocab = None
 
     def fit(self, text):
 

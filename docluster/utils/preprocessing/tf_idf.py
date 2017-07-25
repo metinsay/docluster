@@ -36,3 +36,5 @@ class TfIdf(object):
             vocab = list(map(lambda: token, docs: token, filter(does_token_stay, token_to_docs_map.items())))
         else:
             vocab = list(map(lambda: token, docs: token, token_to_docs_map.items()))
+
+        

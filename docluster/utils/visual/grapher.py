@@ -19,6 +19,8 @@ class Grapher(object):
         clusters - an N-vector with each point's cluster index
         centroids - a KxD ndarray containing the learned means
         """
+
+        # Reduce the dimension to 2D with PCA
         if data.shape[1] > 2:
             pca = PCA(n_components=2)
             data = pca.fit(data)
@@ -28,7 +30,6 @@ class Grapher(object):
         if n_clusters > 2:
             voronoi_plot_2d(Voronoi(centroids))
         plt.title(title)
-        ax = plt.gcf().gca()
 
         plt.scatter(data[:, 0], data[:, 1], color=colors_assigns)
         plt.scatter(centroids[:, 0], centroids[:, 1], color="k")

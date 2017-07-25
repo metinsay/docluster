@@ -26,7 +26,8 @@ class KMeans(Clusterer):
         """ Run the k-means algorithm
         data - an NxD pandas DataFrame
 
-        returns: a tuple containing
+        returns:
+            a tuple containing
             centroids - a KxD ndarray containing the learned means
             clusters - an N-vector of each point's cluster index
             cost - the total cost of all the points to their assigned cluster
@@ -61,6 +62,14 @@ class KMeans(Clusterer):
 
 
     def get_distances_btw_centroids(self, dist_metric=None, do_plot=False):
+        """ Get the distances between each centroid
+            dist_metric - the distance metric
+            do_plot - heat map plot
+
+        returns:
+            dists - a KxK ndarray where dists[i][j] give the distance
+                    between i th and j th centroids
+        """
 
         if not self.cost:
             assert('You need to fit the data first in order to get distances between centroids.')

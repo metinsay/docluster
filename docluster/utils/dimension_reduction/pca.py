@@ -14,7 +14,10 @@ class PCA(DimensionReducer):
         """ Apply PCA on the data
         data - an NxD pandas DataFrame
 
-        returns: the reduced data after applying PCA
+        returns:
+            reduced_data - a Nxn_components ndarray that represents
+                           the pricipal components of data
+
         """
         # Estimate the covariance matrix
         mean = np.mean(data, axis=0)

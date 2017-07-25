@@ -21,7 +21,7 @@ class WikiFetcher(DataFetcher):
         self.suffix = suffix
         self.language = language
         self.filterNone = filterNone
-        self.do_open = do_open
+        self.do_browse = do_browse
 
     def fetch(self):
         suffixed_titles= list(map(lambda title: title + ' ' + self.suffix, self.titles))

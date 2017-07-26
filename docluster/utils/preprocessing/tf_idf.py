@@ -3,6 +3,7 @@ from collections import Counter
 from .preprocessor import Preprocessor
 from ..visual.grapher import Grapher
 
+
 class TfIdf(object):
 
     def __init__(self, min_df=0.0, max_df=1.0, do_idf=True, preprocessor=Preprocessor(), do_plot=False):

@@ -4,9 +4,10 @@ from cluster.bisecting_kmeans import BisectingKMeans
 from cluster.kmeans import KMeans
 from utils import DistanceMetric
 from utils import PCA
-from utils import WikiFetcher
+from utils import WikiFetcher, TweetFetcher
 from utils import TfIdf, Preprocessor
-
+from utils import Language
+from utils import TokenFilter
 
 # from sklearn.feature_extraction.text import TfidfVectorizer
 # tfidf_vectorizer = TfidfVectorizer(max_df=0.6, min_df=0.0, use_idf=True, max_features=500,stop_words='english', ngram_range=(1,1), lowercase=True)
@@ -18,13 +19,22 @@ from utils import TfIdf, Preprocessor
 # dists = km.get_distances_btw_centroids(dist_metric=DistanceMetric.manhattan, do_plot=True)
 # print(dists[0,1], dists[0][1])
 
-wikis = WikiFetcher(['ice tea','javascript'], suffix='').fetch()
-tf_idf = TfIdf(min_df=0.0, max_df=1.0, preprocessor=Preprocessor(parse_html=False, do_stem=False, do_lemmatize=False), do_plot=False)
+positive_tweets = TweetFetcher([':)',':D',':-)',':-D'], access_token='306764865-4t6Y4i849t3Ujd8RW059l2bF14vlr14FLgNCdN2E', access_secret='KLIijF3PM5KPLhGoFhRtQJ4OZB4cwmU8ZPezoECIfGENE', consumer_key='c3NheGxIZQ1lsCS3zzqR3Cz2p', consumer_secret='utNIoGk6srV1rKwIX0eNTVC4Me6cISM26YfPhQkHR7hsnYmlP0', language=Language.english).fetch()
+negative_tweets = TweetFetcher([':(',':/',';(',':-('], access_token='306764865-4t6Y4i849t3Ujd8RW059l2bF14vlr14FLgNCdN2E', access_secret='KLIijF3PM5KPLhGoFhRtQJ4OZB4cwmU8ZPezoECIfGENE', consumer_key='c3NheGxIZQ1lsCS3zzqR3Cz2p', consumer_secret='utNIoGk6srV1rKwIX0eNTVC4Me6cISM26YfPhQkHR7hsnYmlP0', language=Language.english).fetch()
+tweets = positive_tweets + negative_tweets
+additional_filters = [lambda token: len(token) < 3]
+token_filter = TokenFilter(additional_filters=additional_filters, filter_contains=["#","@","http","/"])
+preprocessor = Preprocessor(token_filter=token_filter)
+tf_idf = TfIdf(min_df=0.0, max_df=0.9, preprocessor=preprocessor, do_plot=True)
 
-km = KMeans(k=2, dist_metric=DistanceMetric.eucledian, do_plot=False)
-km.fit(tf_idf.fit(wikis))
-print(tf_idf.vocab)
-print(tf_idf.get_token_vectors(do_plot=True))
+print(tf_idf.fit(tweets))
+
+# wikis = WikiFetcher(['ios','android','windows', 'corgi', 'puppy', 'dog']).fetch()
+
+#
+# km = KMeans(k=2, dist_metric=DistanceMetric.cosine, do_plot=False)
+# print(km.fit(tf_idf.fit(wikis))[1])
+# print(tf_idf.get_token_httpvectors(do_plot=False))
 
 
 # for wiki in wikis:

@@ -14,11 +14,11 @@ class Grapher(object):
         """
         self.colors = colors
 
-    def plot_scatter(self, data, labels=[], title=''):
+    def plot_scatter(self, data, labels=[], color_assignments=[], title=''):
 
         data = self.reduce_data(data)
         fig, ax = plt.subplots()
-        ax.scatter(data[:, 0], data[:, 1])
+        ax.scatter(data[:, 0], data[:, 1],color=color_assignments)
 
         texts = []
         for i, txt in enumerate(labels):

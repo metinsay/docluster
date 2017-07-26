@@ -57,7 +57,8 @@ class TfIdf(object):
         self.tfidf_vector = tfidf_vector
 
         if self.do_plot:
-            Grapher().plot_scatter(tfidf_vector, labels=list(range(n_documents)), title="Scatter plot of document vectors")
+            color_assignments = list(map(lambda label: 'r' if label == 0 else 'b', documents.index))
+            Grapher().plot_scatter(tfidf_vector, color_assignments=color_assignments, title="Scatter plot of document vectors")
 
         return tfidf_vector
 

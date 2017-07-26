@@ -1,7 +1,6 @@
-import numpy as np
 from enum import Enum
-from numpy import *
 import numpy as np
+from numpy import *
 from numpy.linalg import norm
 
 class DistanceMetric(Enum):

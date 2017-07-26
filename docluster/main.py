@@ -21,7 +21,7 @@ from utils import TokenFilter
 
 positive_tweets = TweetFetcher([':)',':D',':-)',':-D'], access_token='306764865-4t6Y4i849t3Ujd8RW059l2bF14vlr14FLgNCdN2E', access_secret='KLIijF3PM5KPLhGoFhRtQJ4OZB4cwmU8ZPezoECIfGENE', consumer_key='c3NheGxIZQ1lsCS3zzqR3Cz2p', consumer_secret='utNIoGk6srV1rKwIX0eNTVC4Me6cISM26YfPhQkHR7hsnYmlP0', language=Language.english).fetch()
 negative_tweets = TweetFetcher([':(',':/',';(',':-('], access_token='306764865-4t6Y4i849t3Ujd8RW059l2bF14vlr14FLgNCdN2E', access_secret='KLIijF3PM5KPLhGoFhRtQJ4OZB4cwmU8ZPezoECIfGENE', consumer_key='c3NheGxIZQ1lsCS3zzqR3Cz2p', consumer_secret='utNIoGk6srV1rKwIX0eNTVC4Me6cISM26YfPhQkHR7hsnYmlP0', language=Language.english).fetch()
-tweets = positive_tweets + negative_tweets
+tweets = pd.Series(positive_tweets + negative_tweets, index=[1]*len(positive_tweets) + [0]*len(negative_tweets))
 additional_filters = [lambda token: len(token) < 3]
 token_filter = TokenFilter(additional_filters=additional_filters, filter_contains=["#","@","http","/"])
 preprocessor = Preprocessor(token_filter=token_filter)

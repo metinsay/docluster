@@ -3,7 +3,6 @@ from collections import Counter
 from .preprocessor import Preprocessor
 from ..visual.grapher import Grapher
 
-
 class TfIdf(object):
 
     def __init__(self, min_df=0.0, max_df=1.0, do_idf=True, preprocessor=Preprocessor(), do_plot=False):
@@ -60,7 +59,7 @@ class TfIdf(object):
             color_assignments = list(map(lambda label: 'r' if label == 0 else 'b', documents.index))
             Grapher().plot_scatter(tfidf_vector, color_assignments=color_assignments, title="Scatter plot of document vectors")
 
-        return tfidf_vector
+        return tfidf_vector, documents.index
 
     def get_values_of_token(self, token, safe=True):
         if not safe or token in self.vocab_to_doc:

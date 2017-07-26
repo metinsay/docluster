@@ -32,12 +32,7 @@ class TokenFilter(object):
 
     def fit(self, token):
         token = token.lower()
-
         for fil in self.filters:
-            if token == 'https':
-                print(fil(token))
             if fil(token):
                 return True
-        if token == 'https':
-            print('HERE')
         return False

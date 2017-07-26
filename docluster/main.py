@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from cluster.bisecting_kmeans import BisectingKMeans
+from cluster.kmeans import KMeans
 from utils import DistanceMetric
 from utils import PCA
 from utils import WikiFetcher
@@ -17,10 +18,11 @@ docs = ["One two threee","Fours ficda asgag","I go to bed","Do you go to bed","I
 # dists = km.get_distances_btw_centroids(dist_metric=DistanceMetric.manhattan, do_plot=True)
 # print(dists[0,1], dists[0][1])
 
+wikis = WikiFetcher(['asp.net','html','ios','objective-c','water','coffee','milk','tea','web developement'], suffix='').fetch()
+tf_idf = TfIdf(min_df=0.0, max_df=1.0, preprocessor=Preprocessor(parse_html=False, do_stem=False, do_lemmatize=False))
 
-print(docs)
-wikis = WikiFetcher(['asp.net','html','ios','objective-c','asp','mvc','css','javascript','web developement'], suffix='').fetch()
-print(TfIdf(preprocessor=Preprocessor(parse_html=False, do_stem=False, do_lemmatize=False)).fit(wikis))
+km = KMeans(k=2, dist_metric=DistanceMetric.eucledian, do_plot=False)
+print(km.fit(tf_idf.fit(wikis)))
 
 
 # for wiki in wikis:

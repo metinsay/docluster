@@ -1,16 +1,17 @@
 import numpy as np
 from collections import Counter
 from .preprocessor import Preprocessor
-
+from ..visual.grapher import Grapher
 
 class TfIdf(object):
 
-    def __init__(self, min_df=0.0, max_df=1.0, do_idf=True, preprocessor=Preprocessor()):
+    def __init__(self, min_df=0.0, max_df=1.0, do_idf=True, preprocessor=Preprocessor(), do_plot=False):
 
         self.min_df = min_df
         self.max_df = max_df
         self.do_idf = do_idf
         self.preprocessor = preprocessor
+        self.do_plot = do_plot
 
         self.vocab = None
 
@@ -53,9 +54,27 @@ class TfIdf(object):
                     tfidf_vector[doc_id, token_id] = tf * idf
 
         self.tfidf_vector = tfidf_vector
+
+        if self.do_plot:
+            Grapher().plot_scatter(tfidf_vector, labels=list(range(n_documents)), title="Scatter plot of document vectors")
+
         return tfidf_vector
 
-    def get_values_of_token(self, token):
-        token_id = self.vocab_to_doc[token]
+    def get_values_of_token(self, token, safe=True):
+        if not safe or token in self.vocab_to_doc:
+            token_id = self.vocab_to_doc[token]
+            n_documents = self.tfidf_vector.shape[0]
+            return np.array([self.tfidf_vector[doc_id, token_id] for doc_id in range(n_documents)])
+
+    def get_token_vectors(self, do_plot=False):
         n_documents = self.tfidf_vector.shape[0]
-        return np.array([self.tfidf_vector[doc_id, token_id] for doc_id in range(n_documents)])
+        n_vocab = len(self.vocab)
+        tokens_vector = np.zeros((n_vocab, n_documents))
+        for token in self.vocab:
+            token_id = self.vocab_to_doc[token]
+            tokens_vector[token_id] = self.get_values_of_token(token, safe=False)
+
+        if do_plot:
+            Grapher().plot_scatter(tokens_vector, labels=self.vocab, title="Scatter plot of token vectors")
+
+        return tokens_vector

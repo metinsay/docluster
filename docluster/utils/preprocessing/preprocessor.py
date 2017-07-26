@@ -45,9 +45,9 @@ class Preprocessor(object):
             return []
 
         tokens = np.hstack(sentece_tokens)
-        does_token_stay = lambda token: (token not in string.punctuation or not self.filter_punctuation) or \
-                                        (token not in self.stop_words or not self.filter_stop_words) or \
-                                        (not token.isdigit() or not self.filter_numbers)
+        does_token_stay = lambda token: (token not in string.punctuation or not self.filter_punctuation) and \
+                                        (token not in self.stop_words or not self.filter_stop_words) and \
+                                        (not any(char.isdigit() for char in token) or not self.filter_numbers)
 
         filtered_tokens = filter(does_token_stay, tokens)
         return list(map(lambda token: token.lower(), filtered_tokens)) if self.lower else list(filtered_tokens)

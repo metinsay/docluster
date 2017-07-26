@@ -13,18 +13,28 @@ class Grapher(object):
         """
         self.colors = colors
 
+    def plot_scatter(self, data, labels=[], title=''):
+
+        data = self.reduce_data(data)
+        fig, ax = plt.subplots()
+        ax.scatter(data[:, 0], data[:, 1])
+
+        texts = []
+        for i, txt in enumerate(labels):
+            ax.text(data[:, 0][i],data[:, 1][i], txt)
+
+
+        plt.title(title)
+        plt.show()
+
     def plot_voronoi(self, data, n_clusters, clusters, centroids, title):
         """ Graph Voronoi Graph
         data - an NxD pandas DataFrame
         clusters - an N-vector with each point's cluster index
         centroids - a KxD ndarray containing the learned means
         """
-
-        # Reduce the dimension to 2D with PCA
-        if data.shape[1] > 2:
-            pca = PCA(n_components=2)
-            data = pca.fit(data)
-            centroids = pca.reduce(centroids)
+        data = self.reduce_data(data)
+        centroids = self.reduce_data(centroids)
 
         colors_assigns= [self.colors[int(x) % len(self.colors)] for x in clusters]
         if n_clusters > 2:
@@ -40,3 +50,11 @@ class Grapher(object):
         plt.colorbar()
         plt.title(title)
         plt.show()
+
+    def reduce_data(self, data):
+        # Reduce the dimension to 2D with PCA
+        if data.shape[1] > 2:
+            pca = PCA(n_components=2)
+            data = pca.fit(data)
+
+        return data

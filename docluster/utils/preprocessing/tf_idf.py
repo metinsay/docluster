@@ -1,7 +1,10 @@
 import numpy as np
+import pandas as pd
 from collections import Counter
 from .preprocessor import Preprocessor
 from ..visual.grapher import Grapher
+from ..data_saver import FileSaver
+from ..constants.file_type import FileType
 
 class TfIdf(object):
 
@@ -79,3 +82,15 @@ class TfIdf(object):
             Grapher().plot_scatter(tokens_vector, labels=self.vocab, title="Scatter plot of token vectors")
 
         return tokens_vector
+
+    def save_model(self, model_name, file_type=FileType.csv , safe=True, directory_path=None):
+        data = pd.DataFrame(self.tfidf_vector)
+        data.columns = self.vocab
+        if directory_path:
+            file_saver = FileSaver(directory_path=directory_path)
+        else:
+            file_saver = FileSaver()
+        file_saver.save(data, model_name, file_type=file_type, safe=safe)
+
+    def load_model(self,):
+        pass

@@ -1,6 +1,6 @@
 import numpy as np
 
-class DistanceMetric(Enum):
+class Loss(Enum):
 
     def hinge_loss_func(data, weights, offset)
         n_data = len(data)

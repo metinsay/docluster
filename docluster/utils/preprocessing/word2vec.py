@@ -28,7 +28,8 @@ class Word2Vec(object):
         words_per_epoch = n_vocab / self.n_epochs
         batch_logit, negative_samples_logit = self._build_graph(data,frequencies)
         loss = self._build_loss_metric(batch_logit, negative_samples_logit)
-        train = self._build_optimizer(loss, words_per_epoch, n_words_trained)
+        optimizer = self._build_optimizer(loss, words_per_epoch, n_words_trained)
+        self._train(data, optimizer, loss)
 
         tf.global_variables_initializer().run()
 
@@ -64,8 +65,8 @@ class Word2Vec(object):
     def _build_graph(self, data, frequencies):
         """Build the graph that is going to be trained."""
 
-        start_index = 0
-        batch, labels, start_index = self._generate_batch(data, start_index)
+        self._batch_input = tf.placeholder(tf.float32, size=(self.batch_size))
+        self._labels_input = tf.placeholder(tf.float32, size=(self.batch_size, 1))
 
         width = 0.5 / self.vec_size
 
@@ -80,8 +81,6 @@ class Word2Vec(object):
         flattened_labels = np.hstack(labels)
         label_weights = tf.nn.embedding_lookup(softmax_weights, flattened_labels)
         label_biases = tf.nn.embedding_lookup(softmax_biases, flattened_labels)
-
-
 
         negative_sample_ids, _, _ = tf.nn.fixed_unigram_candidate_sampler(true_classes=labels, num_true=1, \
                                                                             num_sampled=self.n_negative_samples, unique=True, \
@@ -113,9 +112,25 @@ class Word2Vec(object):
 
         n_words_to_train = float(words_per_epoch * self.n_epochs)
         learning_rate = self.learning_rate * tf.maximum(0.0001, 1.0 - tf.cast(n_words_trained, tf.float32) / n_words_to_train)
-        train = optimizer.minimize(loss, global_step=tf.Variable(0, name="global_step"), \
+        optimizer = optimizer.minimize(loss, global_step=tf.Variable(0, name="global_step"), \
                                     gate_gradients=tf.train.GradientDescentOptimizer(learning_rate).GATE_NONE)
-        return train
+        return optimizer
+
+    def _train(self, data, optimizer):
+        start_index = 0
+        with tf.Session() as sess:
+            for epoch in range(self.n_epochs):
+                avg_cost = 0
+                n_batch = int(data.shape[0] / self.batch_size)
+                for i in range(n_batch):
+                    batch, labels, start_index = self._generate_batch(data, start_index)
+                    _, error = sess.run([optimizer, loss], feed_dict = {self._batch_input: batch, self._labels_input: labels})
+
+                    avg_cost += error / n_batch
+
+                print "Epoch:", (epoch+1), "cost =", "{:.5f}".format(avg_cost)
+
+    print "\nTraining complete!"
 
     def _generate_batch(self, data, start_index):
         """Create a batch for a training step in Word2Vec."""
@@ -145,104 +160,3 @@ class Word2Vec(object):
             # Backtrack a little bit to avoid skipping words in the end of a batch
             start_index = (start_index + len(data) - span) % len(data)
         return batch, labels, start_index
-
-
-        vocabulary_size = len(vocab_set)
-
-
-        graph = tf.Graph()
-        valid_examples = np.random.choice(100, 16, replace=False)
-
-        with graph.as_default():
-
-            # Input data.
-            train_inputs = tf.placeholder(tf.int32, shape=[self.batch_size])
-            train_labels = tf.placeholder(tf.int32, shape=[self.batch_size, 1])
-            valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
-
-            # Ops and variables pinned to the CPU because of missing GPU implementation
-            with tf.device('/cpu:0'):
-                # Look up embeddings for inputs.
-                embeddings = tf.Variable(
-                        tf.random_uniform([vocabulary_size, self.vec_size], -1.0, 1.0))
-                embed = tf.nn.embedding_lookup(embeddings, train_inputs)
-
-                # Construct the variables for the NCE loss
-                nce_weights = tf.Variable(
-                        tf.truncated_normal([vocabulary_size, self.vec_size],
-                                                                stddev=1.0 / math.sqrt(self.vec_size)))
-                nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
-
-            # Compute the average NCE loss for the batch.
-            # tf.nce_loss automatically draws a new sample of the negative labels each
-            # time we evaluate the loss.
-            loss = tf.reduce_mean(
-                    tf.nn.nce_loss(weights=nce_weights,
-                                                 biases=nce_biases,
-                                                 labels=train_labels,
-                                                 inputs=embed,
-                                                 num_sampled=64,
-                                                 num_classes=vocabulary_size))
-
-            # Construct the SGD optimizer using a learning rate of 1.0.
-            optimizer = tf.train.GradientDescentOptimizer(1.0).minimize(loss)
-
-            # Compute the cosine similarity between minibatch examples and all embeddings.
-            norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
-            normalized_embeddings = embeddings / norm
-            valid_embeddings = tf.nn.embedding_lookup(
-                    normalized_embeddings, valid_dataset)
-            similarity = tf.matmul(
-                    valid_embeddings, normalized_embeddings, transpose_b=True)
-
-            # Add variable initializer.
-            init = tf.global_variables_initializer()
-
-        # Step 5: Begin training.
-        num_steps = 100001
-
-        with tf.Session(graph=graph) as session:
-            # We must initialize all variables before we use them.
-            init.run()
-            print('Initialized')
-            index = 0
-            average_loss = 0
-            for step in range(num_steps):
-                batch_inputs, batch_labels, index = generate_batch(index)
-                feed_dict = {train_inputs: batch_inputs, train_labels: batch_labels}
-
-                # We perform one update step by evaluating the optimizer op (including it
-                # in the list of returned values for session.run()
-                _, loss_val = session.run([optimizer, loss], feed_dict=feed_dict)
-                average_loss += loss_val
-
-                if step % 2000 == 0:
-                    if step > 0:
-                        average_loss /= 2000
-                    # The average loss is an estimate of the loss over the last 2000 batches.
-                    print('Average loss at step ', step, ': ', average_loss)
-                    average_loss = 0
-
-                if step % 10000 == 0:
-                    sim = similarity.eval()
-                    for i in range(16):
-                        valid_word = reverse_dictionary[valid_examples[i]]
-                        top_k = 8    # number of nearest neighbors
-                        nearest = (-sim[i, :]).argsort()[1:top_k + 1]
-                        log_str = 'Nearest to %s:' % valid_word
-                        for k in range(top_k):
-                            close_word = reverse_dictionary[nearest[k]]
-                            log_str = '%s %s,' % (log_str, close_word)
-                        print(log_str)
-
-    def train(self, data):
-
-
-
-        embeddings_size = [vocab_size, self.vec_size]
-        width = 0.5 / self.vec_size
-        embeddings = tf.random_uniform(embeddings_size, minval=-width, maxval=width)
-
-        softmax_weights = tf.Variable(tf.zeros(embeddings_size), name='softmax_weights')
-        softmax_bias = tf.Variable(tf.zeros([vocab_size]), name='softmax_bias')
-        glob_step = tf.Variable(0, name='glob_step')

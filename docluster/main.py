@@ -222,4 +222,4 @@ documents = []
 for file_ in onlyfiles:
      documents.append(BeautifulSoup(open(file_,'r').read(), "lxml").get_text())
 
-w2v = Word2Vec().build_dataset(documents)
+w2v = Word2Vec().fit(documents)

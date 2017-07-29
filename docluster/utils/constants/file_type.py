@@ -7,3 +7,4 @@ class FileType(Enum):
     json = 'json'
     xml = 'xml'
     html = 'html'
+    pickle = 'pkl'

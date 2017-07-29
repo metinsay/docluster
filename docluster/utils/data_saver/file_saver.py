@@ -16,3 +16,5 @@ class FileSaver(object):
 
         if file_type == FileType.csv:
             data.to_csv(full_path, encoding=self.encoding)
+
+        return True

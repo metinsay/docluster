@@ -8,12 +8,12 @@ tokenizer = lambda text, stop_words, stem_func: stem(filter_stop_words(tokenize(
 
 class Preprocessor(object):
 
-    def __init__(self, language=Language.english, lower=True, parse_html=True, token_filter=None, do_stem=False, do_lemmatize=False):
+    def __init__(self, language=Language.english, lower=True, parse_html=True, token_filter=TokenFilter(language=Language.english), do_stem=False, do_lemmatize=False):
 
         self.language = language
         self.lower = lower
         self.parse_html = parse_html
-        self.token_filter = token_filter if token_filter else TokenFilter(language=language)
+        self.token_filter =  token_filter if token_filter else None
         self.do_stem = do_stem
         self.do_lemmatize = do_lemmatize
 
@@ -41,7 +41,7 @@ class Preprocessor(object):
 
         tokens = np.hstack(sentece_tokens)
 
-        filtered_tokens = filter(lambda token: not self.token_filter.fit(token), tokens)
+        filtered_tokens = filter(lambda token: not self.token_filter.fit(token), tokens) if self.token_filter else tokens
         return list(map(lambda token: token.lower(), filtered_tokens)) if self.lower else list(filtered_tokens)
 
     def stem(self, tokens):

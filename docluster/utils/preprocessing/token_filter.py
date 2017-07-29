@@ -21,7 +21,7 @@ class TokenFilter(object):
             self.filters.append(lambda token: token in self.stop_words)
 
         if filter_punctuation:
-            self.filters.append(lambda token: token in string.punctuation)
+            self.filters.append(lambda token: all(char in string.punctuation for char in token))
 
         if filter_numbers:
             self.filters.append(lambda token: any(char.isdigit() for char in token))

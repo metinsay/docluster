@@ -9,7 +9,7 @@ import random
 import math
 class Word2Vec(object):
 
-    def __init__(self, n_skips=2, n_negative_samples, n_words=10000, vec_size=300, batch_size=16, window_size=5, learning_rate=0.2, n_epochs=15, do_plot=False):
+    def __init__(self, n_skips=2, n_negative_samples=100, n_words=10000, vec_size=300, batch_size=16, window_size=5, learning_rate=0.2, n_epochs=15, do_plot=False):
 
         self.n_skips = n_skips
         self.n_negative_samples = n_negative_samples
@@ -31,7 +31,7 @@ class Word2Vec(object):
         optimizer = self._build_optimizer(loss, words_per_epoch, n_words_trained)
         self._train(data, optimizer, loss)
 
-        tf.global_variables_initializer().run()
+
 
     def _build_dataset(self, documents):
         """Preprocesses the documents and creates the dataset for fitting."""
@@ -50,6 +50,7 @@ class Word2Vec(object):
 
         # Create the vocab list with 'UNK' for  vocab that couldn't make the vocab list
         vocab =  ['UNK'] + tfidf.vocab
+        self.n_words += 1
         vocab_set = set(vocab)
         diction = {token: index for index, token in enumerate(vocab)}
         reverse_diction = dict(zip(diction.values(), diction.keys()))
@@ -58,33 +59,33 @@ class Word2Vec(object):
         data = list(map(lambda token: diction[token] if token in vocab_set else 0, tokens))
 
         # Get the frequencies of tokens and add the frequency of 'UNK' at the beginning
-        frequencies = np.insert(tfidf.total_term_freq, 0, data.count(0))
+        frequencies = np.insert(tfidf.total_term_freq, 0, data.count(0))[:self.n_words]
 
         return tokens, vocab, data, frequencies, diction, reverse_diction
 
     def _build_graph(self, data, frequencies):
         """Build the graph that is going to be trained."""
 
-        self._batch_input = tf.placeholder(tf.float32, size=(self.batch_size))
-        self._labels_input = tf.placeholder(tf.float32, size=(self.batch_size, 1))
+        self._batch_input = tf.placeholder(tf.int64, shape=[self.batch_size])
+        self._labels_input = tf.placeholder(tf.int64, shape=[self.batch_size, 1])
 
         width = 0.5 / self.vec_size
 
         embeddings_dim = [self.n_words, self.vec_size]
         self._embeddings = tf.Variable(tf.random_uniform(embeddings_dim, minval=-width, maxval=width), name="embeddings")
 
-        batch_embeddings = tf.nn.embedding_lookup(self._embeddings, batch)
+        batch_embeddings = tf.nn.embedding_lookup(self._embeddings, self._batch_input)
 
         softmax_weights = tf.Variable(tf.zeros(embeddings_dim), name="softmax_weights")
         softmax_biases = tf.Variable(tf.zeros([self.n_words]), name="softmax_biases")
 
-        flattened_labels = np.hstack(labels)
-        label_weights = tf.nn.embedding_lookup(softmax_weights, flattened_labels)
-        label_biases = tf.nn.embedding_lookup(softmax_biases, flattened_labels)
+        # flattened_labels = tf.contrib.layers.flatten(self._labels_input)
+        label_weights = tf.nn.embedding_lookup(softmax_weights, self._labels_input)
+        label_biases = tf.nn.embedding_lookup(softmax_biases, self._labels_input)
 
-        negative_sample_ids, _, _ = tf.nn.fixed_unigram_candidate_sampler(true_classes=labels, num_true=1, \
+        negative_sample_ids, _, _ = tf.nn.fixed_unigram_candidate_sampler(true_classes=self._labels_input, num_true=1, \
                                                                             num_sampled=self.n_negative_samples, unique=True, \
-                                                                            range_max=self.n_words, distortion=0.75, unigrams=frequencies)
+                                                                            range_max=self.n_words, distortion=0.75, unigrams=list(frequencies))
 
         negative_sample_weights = tf.nn.embedding_lookup(softmax_weights, negative_sample_ids)
         negative_sample_biases = tf.nn.embedding_lookup(softmax_biases, negative_sample_ids)
@@ -112,25 +113,29 @@ class Word2Vec(object):
 
         n_words_to_train = float(words_per_epoch * self.n_epochs)
         learning_rate = self.learning_rate * tf.maximum(0.0001, 1.0 - tf.cast(n_words_trained, tf.float32) / n_words_to_train)
+        optimizer = tf.train.GradientDescentOptimizer(learning_rate)
         optimizer = optimizer.minimize(loss, global_step=tf.Variable(0, name="global_step"), \
-                                    gate_gradients=tf.train.GradientDescentOptimizer(learning_rate).GATE_NONE)
+                                    gate_gradients=optimizer.GATE_NONE)
         return optimizer
 
-    def _train(self, data, optimizer):
+    def _train(self, data, optimizer, loss):
         start_index = 0
+        init_op = tf.global_variables_initializer()
         with tf.Session() as sess:
+            sess.run(init_op)
+
             for epoch in range(self.n_epochs):
                 avg_cost = 0
-                n_batch = int(data.shape[0] / self.batch_size)
+                n_batch = len(data) // self.batch_size
                 for i in range(n_batch):
                     batch, labels, start_index = self._generate_batch(data, start_index)
                     _, error = sess.run([optimizer, loss], feed_dict = {self._batch_input: batch, self._labels_input: labels})
 
                     avg_cost += error / n_batch
 
-                print "Epoch:", (epoch+1), "cost =", "{:.5f}".format(avg_cost)
+                print("Epoch:", (epoch+1), "cost =", "{:.5f}".format(avg_cost))
 
-    print "\nTraining complete!"
+        print("\nTraining complete!")
 
     def _generate_batch(self, data, start_index):
         """Create a batch for a training step in Word2Vec."""
@@ -159,4 +164,6 @@ class Word2Vec(object):
             start_index = (start_index + 1) % len(data)
             # Backtrack a little bit to avoid skipping words in the end of a batch
             start_index = (start_index + len(data) - span) % len(data)
+
+            flattened_labels = np.hstack(labels)
         return batch, labels, start_index

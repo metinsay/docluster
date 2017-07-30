@@ -1,6 +1,7 @@
-from .data_fetcher import DataFetcher
 import tweepy
+
 from ..constants.language import Language
+from .data_fetcher import DataFetcher
 
 
 class TweetFetcher(DataFetcher):

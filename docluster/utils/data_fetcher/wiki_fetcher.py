@@ -1,6 +1,8 @@
-from .data_fetcher import DataFetcher
-from ..constants.language import Language
 import requests
+
+from ..constants.language import Language
+from .data_fetcher import DataFetcher
+
 
 class WikiFetcher(DataFetcher):
     def __init__(self, titles, suffix='', filterNone=False, language=Language.english, do_browse=False):
@@ -24,7 +26,7 @@ class WikiFetcher(DataFetcher):
         self.do_browse = do_browse
 
     def fetch(self):
-        suffixed_titles= list(map(lambda title: title + ' ' + self.suffix, self.titles))
+        suffixed_titles = list(map(lambda title: title + ' ' + self.suffix, self.titles))
         searched_titles = []
         for title in suffixed_titles:
             search_params = {
@@ -32,7 +34,7 @@ class WikiFetcher(DataFetcher):
                 'srprop': '',
                 'srlimit': 1,
                 'srsearch': title
-                }
+            }
             results = self.make_request(search_params)
 
             if 'error' in results:
@@ -43,10 +45,10 @@ class WikiFetcher(DataFetcher):
         contents = []
         for title in searched_titles:
             query_params = {
-            'prop': 'extracts|revisions',
-            'explaintext': '',
-            'rvprop': 'ids',
-            'titles': title
+                'prop': 'extracts|revisions',
+                'explaintext': '',
+                'rvprop': 'ids',
+                'titles': title
             }
 
             results = self.make_request(query_params)
@@ -55,11 +57,10 @@ class WikiFetcher(DataFetcher):
                 raise ValueError('The Wikipedia request coulnd\'t be compeleted.')
             else:
                 page_ids = list(results['query']['pages'].keys())
-                text = ' '.join(map(lambda page_id: results['query']['pages'][page_id]['extract'].strip(), page_ids))
+                text = ' '.join(
+                    map(lambda page_id: results['query']['pages'][page_id]['extract'].strip(), page_ids))
                 contents.append(text)
         return contents
-
-
 
     def make_request(self, params):
         url = 'http://' + self.language.value.lower() + '.wikipedia.org/w/api.php'

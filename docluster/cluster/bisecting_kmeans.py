@@ -1,9 +1,12 @@
-import numpy as np
-import pandas as pd
-from utils import DistanceMetric, Grapher
-from math import *
-from .clusterer import Clusterer
 import random
+from math import *
+
+import pandas as pd
+
+import numpy as np
+from utils import DistanceMetric, Grapher
+
+from .clusterer import Clusterer
 from .kmeans import KMeans
 
 
@@ -26,7 +29,6 @@ class BisectingKMeans(KMeans):
         self.centroids = None
         self.cost = None
 
-
     def fit(self, data):
         """ Run the bisecting k-means algorithm
         data - an NxD pandas DataFrame
@@ -39,7 +41,7 @@ class BisectingKMeans(KMeans):
 
         n, d = data.shape
         clusters = np.zeros(n)
-        km = KMeans(2, dist_metric=self.dist_metric,eps=self.eps)
+        km = KMeans(2, dist_metric=self.dist_metric, eps=self.eps)
         n_clusters = 1
         while n_clusters < self.k:
             # Find the cluster with most data points and get it's data points
@@ -63,12 +65,14 @@ class BisectingKMeans(KMeans):
             n_clusters += 1
 
         # Find the centroids and total cost
-        centroids = np.array([np.mean(data[clusters == i], axis=0) for i in range(self.k)])
+        centroids = np.array([np.mean(data[clusters == i], axis=0)
+                              for i in range(self.k)])
         cost = np.sum(np.square(data - centroids[clusters.astype('int64')]))
 
         self.centroids, self.clusters, self.cost = centroids, clusters, cost
 
         if self.do_plot:
-            Grapher().plot_voronoi(data, n_clusters=self.k, clusters=clusters, centroids=centroids, title="Bisecting K-means clustering with k= " + str(self.k))
+            Grapher().plot_voronoi(data, n_clusters=self.k, clusters=clusters, centroids=centroids,
+                                   title="Bisecting K-means clustering with k= " + str(self.k))
 
         return (centroids, clusters, cost)

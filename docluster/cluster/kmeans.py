@@ -1,9 +1,13 @@
-import numpy as np
-import pandas as pd
-from utils import DistanceMetric, Grapher
-from math import *
-from .clusterer import Clusterer
 import random
+from math import *
+
+import pandas as pd
+
+import numpy as np
+from utils import DistanceMetric, Grapher
+
+from .clusterer import Clusterer
+
 
 class KMeans(Clusterer):
 
@@ -38,28 +42,29 @@ class KMeans(Clusterer):
         clusters = np.zeros(n)
         prev_cost = -1
         cost = 0
-        while abs(cost-prev_cost) > self.eps:
+        while abs(cost - prev_cost) > self.eps:
             prev_cost = cost
 
             # Assigns every point to the nearest centroid
             for i in range(n):
                 tiled_data_point = np.tile(data[i], (self.k, 1))
-                clusters[i] = np.argmin(self.dist_metric(tiled_data_point, centroids))
+                clusters[i] = np.argmin(
+                    self.dist_metric(tiled_data_point, centroids))
             cost = 0
 
             # For every cluster calculates the distance to data points and add to the total cost
             for j in range(self.k):
                 centroids[j] = np.mean(data[clusters == j], axis=0)
-            cost = np.sum(np.square(data - centroids[clusters.astype('int64')]))
+            cost = np.sum(
+                np.square(data - centroids[clusters.astype('int64')]))
 
         self.centroids, self.clusters, self.cost = centroids, clusters, cost
 
         if self.do_plot:
-            Grapher().plot_voronoi(data, n_clusters=self.k, clusters=clusters, centroids=centroids, title="K-means clustering with k= " + str(self.k))
+            Grapher().plot_voronoi(data, n_clusters=self.k, clusters=clusters,
+                                   centroids=centroids, title="K-means clustering with k= " + str(self.k))
 
         return (centroids, clusters, cost)
-
-
 
     def get_distances_btw_centroids(self, dist_metric=None, do_plot=False):
         """ Get the distances between each centroid
@@ -72,7 +77,8 @@ class KMeans(Clusterer):
         """
 
         if not self.cost:
-            assert('You need to fit the data first in order to get distances between centroids.')
+            assert(
+                'You need to fit the data first in order to get distances between centroids.')
         else:
             # Check if distance metric is changed
             dist_metric = dist_metric if dist_metric else self.dist_metric

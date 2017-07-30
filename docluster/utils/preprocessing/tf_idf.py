@@ -1,11 +1,15 @@
-import numpy as np
-import pandas as pd
 from collections import Counter
-from .preprocessor import Preprocessor
-from ..visual.grapher import Grapher
-from ..data_saver import FileSaver
-from ..data_fetcher import FileFetcher
+
+import pandas as pd
+
+import numpy as np
+
 from ..constants.file_type import FileType
+from ..data_fetcher import FileFetcher
+from ..data_saver import FileSaver
+from ..visual.grapher import Grapher
+from .preprocessor import Preprocessor
+
 
 class TfIdf(object):
 
@@ -50,15 +54,18 @@ class TfIdf(object):
             self.document_tokens.append(doc_tokens)
             # Each token in the document add the index of document to df, and add 1 to tf
             for token in doc_tokens:
-                df_map[token] = set([index]) if token not in df_map else df_map[token] | set([index])
+                df_map[token] = set(
+                    [index]) if token not in df_map else df_map[token] | set([index])
                 tf_map[token] = 1 if token not in tf_map else tf_map[token] + 1
 
             doc_tfs.append(tf_map)
 
         # Only filter the vocab if necessary
         if self.max_df - self.min_df != 1.0:
-            does_token_stay = lambda item: self.min_df <= len(item[1]) / n_documents <= self.max_df
-            self.vocab = list(map(lambda item: item[0], filter(does_token_stay, df_map.items())))
+            def does_token_stay(item): return self.min_df <= len(
+                item[1]) / n_documents <= self.max_df
+            self.vocab = list(
+                map(lambda item: item[0], filter(does_token_stay, df_map.items())))
         else:
             self.vocab = list(map(lambda item: item[0], df_map.items()))
 
@@ -83,8 +90,10 @@ class TfIdf(object):
         self.vocab = list(np.take(self.vocab, indices))
         self.tfidf_vector = np.take(self.tfidf_vector, indices)
         if self.do_plot:
-            color_assignments = list(map(lambda label: 'r' if label == 0 else 'b', documents.index))
-            Grapher().plot_scatter(tfidf_vector, color_assignments=color_assignments, title="Scatter plot of document vectors")
+            color_assignments = list(
+                map(lambda label: 'r' if label == 0 else 'b', documents.index))
+            Grapher().plot_scatter(tfidf_vector, color_assignments=color_assignments,
+                                   title="Scatter plot of document vectors")
 
         return tfidf_vector
 
@@ -140,9 +149,8 @@ class TfIdf(object):
             file_saver = FileSaver()
         return file_saver.save(data, model_name, file_type=file_type, safe=safe)
 
-
-    def load_model(self,model_name, file_type=FileType.csv, directory_path=None):
-        if directory_path :
+    def load_model(self, model_name, file_type=FileType.csv, directory_path=None):
+        if directory_path:
             file_fetcher = FileFetcher(directory_path=directory_path)
         else:
             file_fetcher = FileFetcher()

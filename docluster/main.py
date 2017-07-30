@@ -1,17 +1,27 @@
-import numpy as np
+from os import listdir
+from os.path import isfile, join
+
 import pandas as pd
+
+import numpy as np
+from bs4 import BeautifulSoup
+from classifier import Perceptron
 from cluster.bisecting_kmeans import BisectingKMeans
 from cluster.kmeans import KMeans
-from utils import DistanceMetric
-from utils import PCA
-from utils import WikiFetcher, TweetFetcher, FileFetcher
-from utils import TfIdf, Preprocessor
-from utils import Language
-from utils import TokenFilter, FileSaver, FileType
-from classifier import Perceptron
 from nltk.corpus import movie_reviews
-
-from bs4 import BeautifulSoup
+#
+# import urllib.request
+#
+# fp = urllib.request.urlopen("http://www.ensonhaber.com/mansetler.htm?tarih=2017-07-27")
+# mybytes = fp.read()
+#
+# mystr = mybytes.decode("utf8")
+# fp.close()
+#
+# print(mystr)
+from utils import (PCA, DistanceMetric, FileFetcher, FileSaver, FileType,
+                   Language, Preprocessor, TfIdf, TokenFilter, TweetFetcher,
+                   WikiFetcher, Word2Vec)
 
 # from sklearn.feature_extraction.text import TfidfVectorizer
 # tfidf_vectorizer = TfidfVectorizer(max_df=0.6, min_df=0.0, use_idf=True, max_features=500,stop_words='english', ngram_range=(1,1), lowercase=True)
@@ -195,32 +205,19 @@ from bs4 import BeautifulSoup
 # print("Elapsed time: {}".format(hms_string(elapsed_time)))
 
 
-#
-# import urllib.request
-#
-# fp = urllib.request.urlopen("http://www.ensonhaber.com/mansetler.htm?tarih=2017-07-27")
-# mybytes = fp.read()
-#
-# mystr = mybytes.decode("utf8")
-# fp.close()
-#
-# print(mystr)
-from utils import Word2Vec
 
-from bs4 import BeautifulSoup
 
 
 wiki_directories = ['/Users/metinsay/Downloads/wikiextractor-master/text/AA']
-from os import listdir
-from os.path import isfile, join
 onlyfiles = []
 for directory in wiki_directories:
-    onlyfiles.extend([join(directory, f) for f in listdir(directory) if isfile(join(directory, f))])
+    onlyfiles.extend([join(directory, f)
+                      for f in listdir(directory) if isfile(join(directory, f))])
 
 
 documents = []
 for file_ in onlyfiles[:3]:
-     documents.append(BeautifulSoup(open(file_,'r').read(), "lxml").get_text())
+    documents.append(BeautifulSoup(open(file_, 'r').read(), "lxml").get_text())
 
 w2v = Word2Vec()
 

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Loss(Enum):
 
     def hinge_loss_func(data, weights, offset)

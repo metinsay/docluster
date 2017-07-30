@@ -1,7 +1,9 @@
-import text_miner as tm
-import math
 import itertools
+import math
+
 import data_extractor as data_extractor
+import text_miner as tm
+
 
 class ItemSet(object):
     def __init__(self, items, ids):
@@ -30,7 +32,8 @@ class ItemSet(object):
         return self.__str__()
 
     def __hash__(self):
-      return hash(self.items)
+        return hash(self.items)
+
 
 def generate_candidates(prev_freq_itemsets, word_to_doc_map):
     candidates = set()
@@ -40,7 +43,8 @@ def generate_candidates(prev_freq_itemsets, word_to_doc_map):
             candidates.add(union_itemset)
     return candidates
 
-def run_apriori_tid(documents, min_sup_perc, max_itemset_size, tokenizer = tm.tokenizer):
+
+def run_apriori_tid(documents, min_sup_perc, max_itemset_size, tokenizer=tm.tokenizer):
 
     word_to_doc_map = {}
     for doc_id, text in enumerate(documents):
@@ -55,15 +59,15 @@ def run_apriori_tid(documents, min_sup_perc, max_itemset_size, tokenizer = tm.to
 
     for word, doc_id_set in word_to_doc_map.items():
         if len(doc_id_set) >= min_sup_num:
-            itemset = ItemSet(set([word]),set(doc_id_set))
+            itemset = ItemSet(set([word]), set(doc_id_set))
             freq_itemsets.add(itemset)
-
 
     k = 2
     prev_freq_itemsets = set(freq_itemsets)
     while k <= max_itemset_size and len(prev_freq_itemsets) != 0:
         candiate_itemsets = generate_candidates(prev_freq_itemsets, word_to_doc_map)
-        prev_freq_itemsets = set(filter(lambda itemset: len(itemset.ids) >= min_sup_num, candiate_itemsets))
+        prev_freq_itemsets = set(filter(lambda itemset: len(
+            itemset.ids) >= min_sup_num, candiate_itemsets))
         freq_itemsets |= prev_freq_itemsets
         k += 1
 

@@ -6,11 +6,8 @@ class Document(object):
         self.text = text
         self.label = label
 
-
     def __str__(self):
         return self.label
 
     def __len__(self):
         return len(self.text)
-
-    

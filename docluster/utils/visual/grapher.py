@@ -1,10 +1,13 @@
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from scipy.spatial import Voronoi, voronoi_plot_2d
-from .tsne import *
-from ..dimension_reduction.pca import PCA
 from sklearn.decomposition import TruncatedSVD
+
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.spatial import Voronoi, voronoi_plot_2d
+
+from ..dimension_reduction.pca import PCA
+from .tsne import *
+
 
 class Grapher(object):
 
@@ -18,12 +21,11 @@ class Grapher(object):
 
         data = self.reduce_data(data)
         fig, ax = plt.subplots()
-        ax.scatter(data[:, 0], data[:, 1],color=color_assignments)
+        ax.scatter(data[:, 0], data[:, 1], color=color_assignments)
 
         texts = []
         for i, txt in enumerate(labels):
-            ax.text(data[:, 0][i],data[:, 1][i], txt)
-
+            ax.text(data[:, 0][i], data[:, 1][i], txt)
 
         plt.title(title)
         plt.show()
@@ -37,7 +39,7 @@ class Grapher(object):
         data = self.reduce_data(data)
         centroids = self.reduce_data(centroids)
 
-        colors_assigns= [self.colors[int(x) % len(self.colors)] for x in clusters]
+        colors_assigns = [self.colors[int(x) % len(self.colors)] for x in clusters]
         if n_clusters > 2:
             voronoi_plot_2d(Voronoi(centroids))
         plt.title(title)

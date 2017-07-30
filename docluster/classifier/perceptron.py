@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Perceptron(object):
 
     def __init__(self, n_iterations=10, kind='standard'):
@@ -15,7 +16,8 @@ class Perceptron(object):
 
             for _ in range(self.n_iterations):
                 for feature, label in zip(data, labels):
-                    (weights, offset) = self._update_weights(weights, offset, feature, label)
+                    (weights, offset) = self._update_weights(
+                        weights, offset, feature, label)
 
             self.weights, self.offset = weights, offset
 
@@ -26,20 +28,22 @@ class Perceptron(object):
 
             for _ in range(self.n_iterations):
                 for feature_vector, label in zip(data, labels):
-                    (weights, offset) = self._update_weights(feature_vector, label, weights, offset)
+                    (weights, offset) = self._update_weights(
+                        feature_vector, label, weights, offset)
                     sum_theta = np.add(sum_theta, weights)
                     sum_offset += offset
 
-            self.weights, self.offset = sum_theta / (n_data * self.n_iterations), sum_offset / (n_data * self.n_iterations)
+            self.weights, self.offset = sum_theta / \
+                (n_data * self.n_iterations), sum_offset / (n_data * self.n_iterations)
 
         else:
-            None # TODO: Give error
+            None  # TODO: Give error
 
         return self.weights, self.offset
 
     def _update_weights(self, weights, offset, feature, label):
         if label * (np.dot(feature, weights) + offset) <= 0:
-            weights = np.add(weights,label * feature)
+            weights = np.add(weights, label * feature)
             offset = offset + label
         return (weights, offset)
 

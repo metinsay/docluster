@@ -1,7 +1,9 @@
 import collections
 import math
+import multiprocessing
 import os
 import random
+import threading
 
 import pandas as pd
 
@@ -19,7 +21,7 @@ from .token_filter import TokenFilter
 
 class Word2Vec(object):
 
-    def __init__(self, n_skips=1, n_negative_samples=100, n_words=10000, vec_size=300, batch_size=16, window_size=10, learning_rate=0.2, n_epochs=15, do_plot=False):
+    def __init__(self, n_skips=1, n_negative_samples=100, n_words=10000, vec_size=300, batch_size=20, window_size=10, learning_rate=0.2, n_epochs=15, n_workers=4, do_plot=False):
 
         self.n_skips = n_skips
         self.n_negative_samples = n_negative_samples
@@ -29,6 +31,7 @@ class Word2Vec(object):
         self.learning_rate = learning_rate
         self.n_epochs = n_epochs
         self.n_words = n_words
+        self.n_workers = n_workers
         self.dist_metric = DistanceMetric.cosine
 
     def fit(self, documents):
@@ -42,6 +45,7 @@ class Word2Vec(object):
         loss = self._build_loss_metric(batch_logit, negative_samples_logit)
         optimizer = self._build_optimizer(loss, words_per_epoch, n_words_trained)
         self._train(data, optimizer, loss)
+        self._calculate_embedding_similarities()
 
     def _build_dataset(self, documents):
         """Preprocesses the documents and creates the dataset for fitting."""
@@ -148,22 +152,49 @@ class Word2Vec(object):
         start_index = 0
         init_op = tf.global_variables_initializer()
         with tf.Session() as sess:
-            sess.run(init_op)
+
+            self._sess = sess
+            self._sess.run(init_op)
 
             for epoch in range(self.n_epochs):
-                avg_cost = 0
-                n_batch = len(data) // self.batch_size
-                for i in range(n_batch):
-                    batch, labels, start_index = self._generate_batch(data, start_index)
-                    _, error = sess.run([optimizer, loss], feed_dict={
-                                        self._batch_input: batch, self._labels_input: labels})
+                self._train_one_epoch(data, optimizer, loss)
 
-                    avg_cost += error / n_batch
-
-                print("Epoch:", (epoch + 1), "cost =", "{:.5f}".format(avg_cost))
+                print("Epoch:", (epoch + 1))
 
             self.embeddings = self._embeddings.eval()
 
+        print("\nTraining complete!")
+
+    def _train_one_epoch(self, data, optimizer, loss):
+
+        def worker_duty(q, id_):
+            while True:
+                index = q.get()
+                if index is None:
+                    break
+
+                batch, labels = self._generate_batch(data, index)
+                _, error = self._sess.run([optimizer, loss], feed_dict={
+                    self._batch_input: batch, self._labels_input: labels})
+
+        queue = multiprocessing.Queue()
+        for starting_index in range(0, len(data), self.batch_size):
+            queue.put(starting_index)
+
+        for _ in range(self.n_workers):
+            queue.put(None)
+
+        workers = []
+        for _ in range(self.n_workers):
+            thread = threading.Thread(target=worker_duty, kwargs={'q': queue, 'id_': _})
+            thread.start()
+            workers.append(thread)
+
+        for thread in workers:
+            thread.join()
+
+    def _calculate_embedding_similarities(self):
+        """"Calculate the cosine distance between the embeddings."""
         self.embedding_similarities = np.zeros((self.n_words, self.n_words))
         for i, embedding in enumerate(self.embeddings):
             if i % 20 == 0:
@@ -171,8 +202,6 @@ class Word2Vec(object):
             tiled_embedding = np.tile(embedding, (self.n_words, 1))
             self.embedding_similarities[i] = self.dist_metric(
                 tiled_embedding, self.embeddings)
-
-        print("\nTraining complete!")
 
     def similar(self, word):
 
@@ -221,7 +250,6 @@ class Word2Vec(object):
 
     def _generate_batch(self, data, start_index):
         """Create a batch for a training step in Word2Vec."""
-
         # Initialize variables
         batch = np.zeros(self.batch_size)
         labels = np.zeros((self.batch_size, 1))
@@ -234,7 +262,7 @@ class Word2Vec(object):
             start_index = (start_index + 1) % len(data)
 
         for i in range(self.batch_size // self.n_skips):
-            target = self.window_size  # target label at the center of the buffer
+            target = self.window_size
             targets_to_avoid = [self.window_size]
             for j in range(self.n_skips):
                 while target in targets_to_avoid:
@@ -245,7 +273,6 @@ class Word2Vec(object):
             buf.append(data[start_index])
             start_index = (start_index + 1) % len(data)
             # Backtrack a little bit to avoid skipping words in the end of a batch
-            start_index = (start_index + len(data) - span) % len(data)
+        start_index = (start_index + len(data) - span) % len(data)
 
-            flattened_labels = np.hstack(labels)
-        return batch, labels, start_index
+        return batch, labels

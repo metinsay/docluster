@@ -23,6 +23,7 @@ class TfIdf(object):
         preprocessor - the proproccessor that is going to tokenize the documents
         do_plot - do plot scatter plot after fitting
         """
+
         self.n_words = n_words
         self.min_df = min_df
         self.max_df = max_df

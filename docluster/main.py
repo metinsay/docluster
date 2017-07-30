@@ -9,16 +9,6 @@ from classifier import Perceptron
 from cluster.bisecting_kmeans import BisectingKMeans
 from cluster.kmeans import KMeans
 from nltk.corpus import movie_reviews
-#
-# import urllib.request
-#
-# fp = urllib.request.urlopen("http://www.ensonhaber.com/mansetler.htm?tarih=2017-07-27")
-# mybytes = fp.read()
-#
-# mystr = mybytes.decode("utf8")
-# fp.close()
-#
-# print(mystr)
 from utils import (PCA, DistanceMetric, FileFetcher, FileSaver, FileType,
                    Language, Preprocessor, TfIdf, TokenFilter, TweetFetcher,
                    WikiFetcher, Word2Vec)
@@ -205,9 +195,6 @@ from utils import (PCA, DistanceMetric, FileFetcher, FileSaver, FileType,
 # print("Elapsed time: {}".format(hms_string(elapsed_time)))
 
 
-
-
-
 wiki_directories = ['/Users/metinsay/Downloads/wikiextractor-master/text/AA']
 onlyfiles = []
 for directory in wiki_directories:
@@ -219,6 +206,6 @@ documents = []
 for file_ in onlyfiles[:3]:
     documents.append(BeautifulSoup(open(file_, 'r').read(), "lxml").get_text())
 
-w2v = Word2Vec()
+w2v = Word2Vec(n_workers=8)
 
-w2v.load_model('w2v_turkish')
+w2v.fit(documents)

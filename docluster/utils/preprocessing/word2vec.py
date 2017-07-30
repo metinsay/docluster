@@ -7,9 +7,15 @@ from .tf_idf import TfIdf
 import numpy as np
 import random
 import math
+from ..constants.distance_metric import DistanceMetric
+from ..data_saver import FileSaver
+from ..data_fetcher import FileFetcher
+from ..constants.file_type import FileType
+import pandas as pd
+
 class Word2Vec(object):
 
-    def __init__(self, n_skips=2, n_negative_samples=100, n_words=10000, vec_size=300, batch_size=16, window_size=5, learning_rate=0.2, n_epochs=15, do_plot=False):
+    def __init__(self, n_skips=1, n_negative_samples=100, n_words=10000, vec_size=300, batch_size=16, window_size=10, learning_rate=0.2, n_epochs=15, do_plot=False):
 
         self.n_skips = n_skips
         self.n_negative_samples = n_negative_samples
@@ -19,17 +25,19 @@ class Word2Vec(object):
         self.learning_rate = learning_rate
         self.n_epochs = n_epochs
         self.n_words = n_words
+        self.dist_metric = DistanceMetric.cosine
 
     def fit(self, documents):
         n_words_trained = 0
-        tokens, vocab, data, frequencies, diction, reverse_diction = self._build_dataset(documents)
+        tokens, self.vocab, data, frequencies, self.diction, self.reverse_diction = self._build_dataset(documents)
         n_tokens = len(tokens)
-        n_vocab = len(vocab)
+        n_vocab = len(self.vocab)
         words_per_epoch = n_vocab / self.n_epochs
         batch_logit, negative_samples_logit = self._build_graph(data,frequencies)
         loss = self._build_loss_metric(batch_logit, negative_samples_logit)
         optimizer = self._build_optimizer(loss, words_per_epoch, n_words_trained)
         self._train(data, optimizer, loss)
+
 
 
 
@@ -50,8 +58,8 @@ class Word2Vec(object):
 
         # Create the vocab list with 'UNK' for  vocab that couldn't make the vocab list
         vocab =  ['UNK'] + tfidf.vocab
-        self.n_words += 1
         vocab_set = set(vocab)
+        self.n_words += 1
         diction = {token: index for index, token in enumerate(vocab)}
         reverse_diction = dict(zip(diction.values(), diction.keys()))
 
@@ -119,6 +127,8 @@ class Word2Vec(object):
         return optimizer
 
     def _train(self, data, optimizer, loss):
+        """Train the model."""
+
         start_index = 0
         init_op = tf.global_variables_initializer()
         with tf.Session() as sess:
@@ -135,7 +145,63 @@ class Word2Vec(object):
 
                 print("Epoch:", (epoch+1), "cost =", "{:.5f}".format(avg_cost))
 
+            self.embeddings = self._embeddings.eval()
+
+        self.embedding_similarities = np.zeros((self.n_words, self.n_words))
+        for i, embedding in enumerate(self.embeddings):
+            if i%20 == 0:
+                print(i+1, " Word similarity")
+            tiled_embedding = np.tile(embedding, (self.n_words, 1))
+            self.embedding_similarities[i] = self.dist_metric(tiled_embedding, self.embeddings)
+
+
         print("\nTraining complete!")
+
+
+    def similar(self, word):
+
+        if word in self.vocab:
+
+            token_id = self.diction[word]
+            tiled_embedding = np.tile(self.embeddings[token_id], (self.n_words, 1))
+            embedding_similarities = self.dist_metric(tiled_embedding, self.embeddings)
+            most_similar_token_ids = (-embedding_similarities).argsort()
+
+            return list(map(lambda token_id: self.reverse_diction[token_id],most_similar_token_ids))
+        else:
+            print('not in vocab')
+
+    def save_model(self, model_name, file_type=FileType.csv, safe=True, directory_path=None):
+        """ Save the fitted model
+        model_name - the model name / file name
+        file_type - the type of file (csv, txt, ...)
+        returns:
+            token_vector - a NxD ndarray containing the token vectors
+        """
+
+        if self.embeddings is None:
+            return False
+        data = pd.DataFrame(self.embeddings.T)
+        data.columns = self.vocab
+        if directory_path:
+            file_saver = FileSaver(directory_path=directory_path)
+        else:
+            file_saver = FileSaver()
+        return file_saver.save(data, model_name, file_type=file_type, safe=safe)
+
+    def load_model(self, model_name, file_type=FileType.csv, directory_path=None):
+        if directory_path :
+            file_fetcher = FileFetcher(directory_path=directory_path)
+        else:
+            file_fetcher = FileFetcher()
+
+        self.n_words += 1
+        data = file_fetcher.load(model_name, file_type)
+
+        self.embeddings = data.as_matrix().T
+        self.vocab = data.columns.tolist()
+        self.diction = {token: index for index, token in enumerate(self.vocab)}
+        self.reverse_diction = dict(zip(self.diction.values(), self.diction.keys()))
 
     def _generate_batch(self, data, start_index):
         """Create a batch for a training step in Word2Vec."""

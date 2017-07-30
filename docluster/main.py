@@ -219,7 +219,9 @@ for directory in wiki_directories:
 
 
 documents = []
-for file_ in onlyfiles[:1]:
+for file_ in onlyfiles[:3]:
      documents.append(BeautifulSoup(open(file_,'r').read(), "lxml").get_text())
 
-w2v = Word2Vec().fit(documents)
+w2v = Word2Vec()
+
+w2v.load_model('w2v_turkish')

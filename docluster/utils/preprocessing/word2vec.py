@@ -21,20 +21,79 @@ from .token_filter import TokenFilter
 
 class Word2Vec(object):
 
-    def __init__(self, n_skips=1, n_negative_samples=100, n_words=10000, vec_size=300, batch_size=20, window_size=10, learning_rate=0.2, n_epochs=15, n_workers=4, do_plot=False):
+    def __init__(self, preprocessor=None, n_skips=1, n_negative_samples=100, n_words=10000, embedding_size=300, batch_size=20, window_size=10, learning_rate=0.2, n_epochs=1, n_workers=4, do_plot=False):
+        """
+            A Skip-Gram model Word2Vec with multi-thread training capability.
 
+            Paramaters:
+            -----------
+            preprocessor : Preprocessor
+                The preprocessor that will tokenize the documents.
+                The default one also filters punctuation, tokens with numeric
+                characters and one letter words. Furthermore, no stemming or
+                lemmatization is applied. All these can be adjusted
+                by passing a custom preprocessor.
+            n_skip : int
+                The number of skips.
+            n_negative_samples : int
+                The number of negative samples that are going to collected for each
+                batch.
+            n_words : int
+                The number of words that the vocabulary will have. The filtering is
+                based on the word frequency. Therefore, less frequent words will not
+                be included in the vocabulary.
+            embedding_size : int
+                The size of the embedding vectors. Usually the more makes the embeddings
+                more accurate, but this is not always the case. Increasing the size
+                dramatically affects trainning time.
+            batch_size : int
+                The batch size.
+            window_size : int
+                The window size where the words to the left and to the right of the words
+                will give context to the word.
+            learning_rate : int
+                The initial learning rate of the gradient decent.
+            n_epochs : int
+                The number of epoches the model is going to be trained. Increasing the number
+                dramatically affects trainning time.
+            n_workers : int
+                The number of workers that is going to train the model concurrently.
+                It is not recommended to use more than the number of core.
+            do_plot : bool
+
+            Attributes:
+            -----------
+            embeddings :
+        """
+        if preprocessor is None:
+            additional_filters = [lambda token: len(token) == 1]
+            token_filter = TokenFilter(filter_stop_words=False,
+                                       additional_filters=additional_filters)
+            preprocessor = Preprocessor(do_stem=False, do_lemmatize=False,
+                                        parse_html=False, token_filter=token_filter, lower=False)
+
+        self.preprocessor = preprocessor
         self.n_skips = n_skips
         self.n_negative_samples = n_negative_samples
-        self.vec_size = vec_size
+        self.embedding_size = embedding_size
         self.batch_size = batch_size
         self.window_size = window_size
         self.learning_rate = learning_rate
         self.n_epochs = n_epochs
         self.n_words = n_words
         self.n_workers = n_workers
+
         self.dist_metric = DistanceMetric.cosine
 
     def fit(self, documents):
+        """
+            Train the Word2Vec model with the documents.
+
+            Paramaters:
+            -----------
+            documents : list(str)
+                the documents that the Word2Vec model is going to learn the embeddings from.
+        """
         n_words_trained = 0
         tokens, self.vocab, data, frequencies, self.diction, self.reverse_diction = self._build_dataset(
             documents)
@@ -50,15 +109,8 @@ class Word2Vec(object):
     def _build_dataset(self, documents):
         """Preprocesses the documents and creates the dataset for fitting."""
 
-        # Create a specific tokenizer filtering out one length tokens
-        additional_filters = [lambda token: len(token) == 1]
-        token_filter = TokenFilter(filter_stop_words=False,
-                                   additional_filters=additional_filters)
-        preprocessor = Preprocessor(do_stem=False, do_lemmatize=False,
-                                    parse_html=False, token_filter=token_filter, lower=False)
-
         # Get the term frequencies without idf
-        tfidf = TfIdf(do_idf=False, preprocessor=preprocessor, n_words=self.n_words)
+        tfidf = TfIdf(do_idf=False, preprocessor=self.preprocessor, n_words=self.n_words)
         tfidf.fit(documents)
 
         # Flatten the document tokens to make them on long list
@@ -86,9 +138,9 @@ class Word2Vec(object):
         self._batch_input = tf.placeholder(tf.int64, shape=[self.batch_size])
         self._labels_input = tf.placeholder(tf.int64, shape=[self.batch_size, 1])
 
-        width = 0.5 / self.vec_size
+        width = 0.5 / self.embedding_size
 
-        embeddings_dim = [self.n_words, self.vec_size]
+        embeddings_dim = [self.n_words, self.embedding_size]
         self._embeddings = tf.Variable(tf.random_uniform(
             embeddings_dim, minval=-width, maxval=width), name="embeddings")
 
@@ -97,7 +149,6 @@ class Word2Vec(object):
         softmax_weights = tf.Variable(tf.zeros(embeddings_dim), name="softmax_weights")
         softmax_biases = tf.Variable(tf.zeros([self.n_words]), name="softmax_biases")
 
-        # flattened_labels = tf.contrib.layers.flatten(self._labels_input)
         label_weights = tf.nn.embedding_lookup(softmax_weights, self._labels_input)
         label_biases = tf.nn.embedding_lookup(softmax_biases, self._labels_input)
 
@@ -166,8 +217,10 @@ class Word2Vec(object):
         print("\nTraining complete!")
 
     def _train_one_epoch(self, data, optimizer, loss):
+        """Train one epoch with workers."""
 
-        def worker_duty(q, id_):
+        # Each worker generates a batch and trains it until posion pill
+        def worker_duty(q):
             while True:
                 index = q.get()
                 if index is None:
@@ -177,79 +230,28 @@ class Word2Vec(object):
                 _, error = self._sess.run([optimizer, loss], feed_dict={
                     self._batch_input: batch, self._labels_input: labels})
 
+        # Create a threadsafe queue to store the batch indexes
         queue = multiprocessing.Queue()
         for starting_index in range(0, len(data), self.batch_size):
             queue.put(starting_index)
 
+        # Poison pills
         for _ in range(self.n_workers):
             queue.put(None)
 
+        # Create and run the threads
         workers = []
         for _ in range(self.n_workers):
-            thread = threading.Thread(target=worker_duty, kwargs={'q': queue, 'id_': _})
+            thread = threading.Thread(target=worker_duty, kwargs={'q': queue})
             thread.start()
             workers.append(thread)
 
         for thread in workers:
             thread.join()
 
-    def _calculate_embedding_similarities(self):
-        """"Calculate the cosine distance between the embeddings."""
-        self.embedding_similarities = np.zeros((self.n_words, self.n_words))
-        for i, embedding in enumerate(self.embeddings):
-            if i % 20 == 0:
-                print(i + 1, " Word similarity")
-            tiled_embedding = np.tile(embedding, (self.n_words, 1))
-            self.embedding_similarities[i] = self.dist_metric(
-                tiled_embedding, self.embeddings)
-
-    def similar(self, word):
-
-        if word in self.vocab:
-
-            token_id = self.diction[word]
-            tiled_embedding = np.tile(self.embeddings[token_id], (self.n_words, 1))
-            embedding_similarities = self.dist_metric(tiled_embedding, self.embeddings)
-            most_similar_token_ids = (-embedding_similarities).argsort()
-
-            return list(map(lambda token_id: self.reverse_diction[token_id], most_similar_token_ids))
-        else:
-            print('not in vocab')
-
-    def save_model(self, model_name, file_type=FileType.csv, safe=True, directory_path=None):
-        """ Save the fitted model
-        model_name - the model name / file name
-        file_type - the type of file (csv, txt, ...)
-        returns:
-            token_vector - a NxD ndarray containing the token vectors
-        """
-
-        if self.embeddings is None:
-            return False
-        data = pd.DataFrame(self.embeddings.T)
-        data.columns = self.vocab
-        if directory_path:
-            file_saver = FileSaver(directory_path=directory_path)
-        else:
-            file_saver = FileSaver()
-        return file_saver.save(data, model_name, file_type=file_type, safe=safe)
-
-    def load_model(self, model_name, file_type=FileType.csv, directory_path=None):
-        if directory_path:
-            file_fetcher = FileFetcher(directory_path=directory_path)
-        else:
-            file_fetcher = FileFetcher()
-
-        self.n_words += 1
-        data = file_fetcher.load(model_name, file_type)
-
-        self.embeddings = data.as_matrix().T
-        self.vocab = data.columns.tolist()
-        self.diction = {token: index for index, token in enumerate(self.vocab)}
-        self.reverse_diction = dict(zip(self.diction.values(), self.diction.keys()))
-
     def _generate_batch(self, data, start_index):
         """Create a batch for a training step in Word2Vec."""
+
         # Initialize variables
         batch = np.zeros(self.batch_size)
         labels = np.zeros((self.batch_size, 1))
@@ -276,3 +278,89 @@ class Word2Vec(object):
         start_index = (start_index + len(data) - span) % len(data)
 
         return batch, labels
+
+    def _calculate_embedding_similarities(self):
+        """"Calculate the cosine distance between the embeddings."""
+
+        self.embedding_similarities = np.zeros((self.n_words, self.n_words))
+        for i, embedding in enumerate(self.embeddings):
+            if i % 20 == 0:
+                print(i + 1, " Word similarity")
+            tiled_embedding = np.tile(embedding, (self.n_words, 1))
+            self.embedding_similarities[i] = self.dist_metric(
+                tiled_embedding, self.embeddings)
+
+    def most_similar_words(self, word, n_words=5, include_similarity=False):
+        """
+            Get the most similar words to a word.
+
+            Paramaters:
+            -----------
+            word : list(str)
+                The word that is the point of intrest.
+            n_words : int
+                The number of words that is going to be returned.
+            include_similarity : bool
+                If to include the similarity score as part of a tuple next to the words.
+
+            Return:
+            -------
+            similar_words : list(str) or list(tuple(str, float))
+                The words that are most similar to the word according to the trained
+                embeddings.
+        """
+
+        if word in self.vocab:
+            token_id = self.diction[word]
+            tiled_embedding = np.tile(self.embeddings[token_id], (self.n_words, 1))
+            embedding_similarities = self.dist_metric(tiled_embedding, self.embeddings)
+            most_similar_token_ids = (-embedding_similarities).argsort()
+
+            return list(map(lambda token_id: self.reverse_diction[token_id], most_similar_token_ids))
+        else:
+            print('not in vocab')
+
+    def save_model(self, model_name, file_type=FileType.csv, safe=True, directory_path=None):
+        """
+            Save the fitted model.
+
+            Paramaters:
+            -----------
+            model_name : str
+                The model name (also the file name) of the model is going to be saved under.
+            file_type : FileType
+                The file type that the model is going to be saved as.
+
+            Return:
+            -------
+            saved : bool
+                If the model is saved successfully or not.
+        """
+
+        if self.embeddings is None:
+            return False
+
+        data = pd.DataFrame(self.embeddings.T)
+        data.columns = self.vocab
+
+        if directory_path:
+            file_saver = FileSaver(directory_path=directory_path)
+        else:
+            file_saver = FileSaver()
+
+        return file_saver.save(data, model_name, file_type=file_type, safe=safe)
+
+    def load_model(self, model_name, file_type=FileType.csv, directory_path=None):
+
+        if directory_path:
+            file_fetcher = FileFetcher(directory_path=directory_path)
+        else:
+            file_fetcher = FileFetcher()
+
+        self.n_words += 1
+        data = file_fetcher.load(model_name, file_type)
+
+        self.embeddings = data.as_matrix().T
+        self.vocab = data.columns.tolist()
+        self.diction = {token: index for index, token in enumerate(self.vocab)}
+        self.reverse_diction = dict(zip(self.diction.values(), self.diction.keys()))

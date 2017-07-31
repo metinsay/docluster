@@ -203,7 +203,7 @@ for directory in wiki_directories:
 
 
 documents = []
-for file_ in onlyfiles[:3]:
+for file_ in onlyfiles[:1]:
     documents.append(BeautifulSoup(open(file_, 'r').read(), "lxml").get_text())
 
 w2v = Word2Vec(n_workers=8)

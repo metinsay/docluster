@@ -21,7 +21,7 @@ from .token_filter import TokenFilter
 
 class Word2Vec(object):
 
-    def __init__(self, preprocessor=None, n_skips=1, n_negative_samples=100, n_words=10000, embedding_size=300, batch_size=20, window_size=10, learning_rate=0.2, n_epochs=1, n_workers=4, do_plot=False):
+    def __init__(self, preprocessor=None, n_skips=1, n_negative_samples=100, n_words=10000, embedding_size=300, batch_size=20, window_size=10, learning_rate=0.2, n_epochs=2, n_workers=4, do_plot=False):
         """
             A Skip-Gram model Word2Vec with multi-thread training capability.
 
@@ -64,6 +64,7 @@ class Word2Vec(object):
             Attributes:
             -----------
             embeddings :
+                The embedding vectors that represents each word
         """
         if preprocessor is None:
             additional_filters = [lambda token: len(token) == 1]
@@ -83,7 +84,7 @@ class Word2Vec(object):
         self.n_words = n_words
         self.n_workers = n_workers
 
-        self.dist_metric = DistanceMetric.cosine
+        self._dist_metric = DistanceMetric.cosine
 
     def fit(self, documents):
         """
@@ -104,7 +105,6 @@ class Word2Vec(object):
         loss = self._build_loss_metric(batch_logit, negative_samples_logit)
         optimizer = self._build_optimizer(loss, words_per_epoch, n_words_trained)
         self._train(data, optimizer, loss)
-        self._calculate_embedding_similarities()
 
     def _build_dataset(self, documents):
         """Preprocesses the documents and creates the dataset for fitting."""
@@ -206,9 +206,9 @@ class Word2Vec(object):
 
             self._sess = sess
             self._sess.run(init_op)
-
+            index = 0
             for epoch in range(self.n_epochs):
-                self._train_one_epoch(data, optimizer, loss)
+                index = self._train_one_epoch(data, optimizer, loss, index)
 
                 print("Epoch:", (epoch + 1))
 
@@ -216,7 +216,7 @@ class Word2Vec(object):
 
         print("\nTraining complete!")
 
-    def _train_one_epoch(self, data, optimizer, loss):
+    def _train_one_epoch(self, data, optimizer, loss, index):
         """Train one epoch with workers."""
 
         # Each worker generates a batch and trains it until posion pill
@@ -232,7 +232,7 @@ class Word2Vec(object):
 
         # Create a threadsafe queue to store the batch indexes
         queue = multiprocessing.Queue()
-        for starting_index in range(0, len(data), self.batch_size):
+        for starting_index in range(index, len(data), self.batch_size // self.n_skips):
             queue.put(starting_index)
 
         # Poison pills
@@ -249,9 +249,11 @@ class Word2Vec(object):
         for thread in workers:
             thread.join()
 
+        return (starting_index + self.batch_size // self.n_skips) % len(data)
+
     def _generate_batch(self, data, start_index):
         """Create a batch for a training step in Word2Vec."""
-
+        print(start_index)
         # Initialize variables
         batch = np.zeros(self.batch_size)
         labels = np.zeros((self.batch_size, 1))
@@ -276,19 +278,7 @@ class Word2Vec(object):
             start_index = (start_index + 1) % len(data)
             # Backtrack a little bit to avoid skipping words in the end of a batch
         start_index = (start_index + len(data) - span) % len(data)
-
         return batch, labels
-
-    def _calculate_embedding_similarities(self):
-        """"Calculate the cosine distance between the embeddings."""
-
-        self.embedding_similarities = np.zeros((self.n_words, self.n_words))
-        for i, embedding in enumerate(self.embeddings):
-            if i % 20 == 0:
-                print(i + 1, " Word similarity")
-            tiled_embedding = np.tile(embedding, (self.n_words, 1))
-            self.embedding_similarities[i] = self.dist_metric(
-                tiled_embedding, self.embeddings)
 
     def most_similar_words(self, word, n_words=5, include_similarity=False):
         """
@@ -313,7 +303,7 @@ class Word2Vec(object):
         if word in self.vocab:
             token_id = self.diction[word]
             tiled_embedding = np.tile(self.embeddings[token_id], (self.n_words, 1))
-            embedding_similarities = self.dist_metric(tiled_embedding, self.embeddings)
+            embedding_similarities = self._dist_metric(tiled_embedding, self.embeddings)
             most_similar_token_ids = (-embedding_similarities).argsort()
 
             return list(map(lambda token_id: self.reverse_diction[token_id], most_similar_token_ids))

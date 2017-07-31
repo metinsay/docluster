@@ -1,17 +1,57 @@
+import string
+from multiprocessing import cpu_count
 from os import listdir
 from os.path import isfile, join
 
 import pandas as pd
 
+import gensim
+import nltk
 import numpy as np
 from bs4 import BeautifulSoup
 from classifier import Perceptron
 from cluster.bisecting_kmeans import BisectingKMeans
 from cluster.kmeans import KMeans
 from nltk.corpus import movie_reviews
+# w2v = Word2Vec(n_workers=8)
+#
+# w2v.fit(documents)
+#
+#
+# def tokenize(text):
+#     html = BeautifulSoup(text, "html5lib").get_text()
+#     results = [words for words in [nltk.word_tokenize(
+#         sent) for sent in nltk.sent_tokenize(html)]]
+#
+#     results = [[word.lower().replace('-', '').replace('/', '')
+#                 for word in sentence] for sentence in results]
+#     return [list(filter(lambda token: token not in string.punctuation and not token.isdigit(), sentence)) for sentence in results]
+#
+#
+# clustered_data = documents
+# flattened_data = '\n'.join(clustered_data)
+# clustered_data = tokenize(flattened_data)
+# # print(clustered_data)
+#
+# model = gensim.models.Word2Vec(clustered_data, size=300,
+#                                window=10, min_count=0, workers=4, sg=1)
+#
+# print(model.wv.most_similar('ve'))
 from utils import (PCA, DistanceMetric, FileFetcher, FileSaver, FileType,
                    Language, Preprocessor, TfIdf, TokenFilter, TweetFetcher,
-                   WikiFetcher, Word2Vec)
+                   WikiFetcher, Word2Phrase, Word2Vec)
+
+wiki_directories = ['/Users/metinsay/Downloads/wikiextractor-master/text/AA']
+onlyfiles = []
+for directory in wiki_directories:
+    onlyfiles.extend([join(directory, f)
+                      for f in listdir(directory) if isfile(join(directory, f))])
+
+
+documents = []
+for file_ in onlyfiles[:1]:
+    documents.append(BeautifulSoup(open(file_, 'r').read(), "lxml").get_text())
+
 
 # from sklearn.feature_extraction.text import TfidfVectorizer
 # tfidf_vectorizer = TfidfVectorizer(max_df=0.6, min_df=0.0, use_idf=True, max_features=500,stop_words='english', ngram_range=(1,1), lowercase=True)
@@ -63,32 +103,6 @@ from utils import (PCA, DistanceMetric, FileFetcher, FileSaver, FileType,
 # for wiki in wikis:
 #     print(len(wiki))
 #
-# import gensim
-# from multiprocessing import cpu_count
-# from bs4 import BeautifulSoup
-# import numpy as np
-# import nltk
-# import string
-#
-#
-# def tokenize(text):
-#     html = BeautifulSoup(text, "html5lib").get_text()
-#     results = [words for words in [nltk.word_tokenize(sent) for sent in nltk.sent_tokenize(html)]]
-#
-#
-#     results = [[word.lower().replace('-','').replace('/','') for word in sentence] for sentence in results]
-#     return [list(filter(lambda token: token not in string.punctuation and not token.isdigit(), sentence)) for sentence in results]
-#
-#
-#
-# clustered_data = wikis
-# flattened_data = '.\n'.join(clustered_data)
-# clustered_data = tokenize(flattened_data)
-# # print(clustered_data)
-#
-# model = gensim.models.Word2Vec(clustered_data, size=10000, window=10, min_count=5, workers=4)
-#
-# print(model.wv.similarity('ios', 'web'))
 
 
 # data = FileFetcher('/Users/metinsay/Downloads/trwiki-20160305/').load('articles',FileType.csv)
@@ -194,18 +208,5 @@ from utils import (PCA, DistanceMetric, FileFetcher, FileSaver, FileType,
 # print("Redirect pages: {:,}".format(redirectCount))
 # print("Elapsed time: {}".format(hms_string(elapsed_time)))
 
-
-wiki_directories = ['/Users/metinsay/Downloads/wikiextractor-master/text/AA']
-onlyfiles = []
-for directory in wiki_directories:
-    onlyfiles.extend([join(directory, f)
-                      for f in listdir(directory) if isfile(join(directory, f))])
-
-
-documents = []
-for file_ in onlyfiles[:1]:
-    documents.append(BeautifulSoup(open(file_, 'r').read(), "lxml").get_text())
-
-w2v = Word2Vec(n_workers=8)
-
-w2v.fit(documents)
+w2p = Word2Phrase(max_phrase_len=2)
+print(w2p.fit(documents))

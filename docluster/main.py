@@ -49,7 +49,7 @@ for directory in wiki_directories:
 
 
 documents = []
-for file_ in onlyfiles[:1]:
+for file_ in onlyfiles[:3]:
     documents.append(BeautifulSoup(open(file_, 'r').read(), "lxml").get_text())
 
 
@@ -208,5 +208,5 @@ for file_ in onlyfiles[:1]:
 # print("Redirect pages: {:,}".format(redirectCount))
 # print("Elapsed time: {}".format(hms_string(elapsed_time)))
 
-w2p = Word2Phrase(max_phrase_len=2)
+w2p = Word2Phrase(max_phrase_len=4)
 print(w2p.fit(documents))

@@ -36,7 +36,6 @@ class Word2Phrase(object):
             freqs[token] = 1 if token not in freqs else freqs[token] + 1
 
         for phrase_len in range(self.max_phrase_len, 1, -1):
-            print(phrase_len)
 
             token_groups = self._groupwise(tokens, phrase_len)
             for phrase in token_groups:
@@ -54,11 +53,14 @@ class Word2Phrase(object):
                         if all([self.delimiter.join(phrase) not in prev_phrase for prev_phrase in list(self.phrases)]):
                             self.phrases.add(self.delimiter.join(phrase))
 
-        # for pair in pairs:
-        #     documents = [document.replace(' '.join(pair), '_'.join(pair))
-        #                  for document in documents]
-
         return self.phrases
+
+    def put_phrases_in_documents(self, documents):
+        for phrase in self.phrases:
+            no_deli_phrase = phrase.replace(self.delimiter, ' ')
+            documents = [document.replace(no_deli_phrase, phrase)
+                         for document in documents]
+        return documents
 
     def _groupwise(self, iterable, n_groups):
         "s -> (s0,s1), (s1,s2), (s2, s3), ..."

@@ -1,0 +1,1 @@
+Search.setIndex({docnames:["docluster"],envversion:52,filenames:["docluster.rst"],objects:{},objnames:{},objtypes:{},terms:{index:0,modul:0,page:0,search:0},titles:["Welcome to docluster\u2019s documentation!"],titleterms:{doclust:0,document:0,indic:0,tabl:0,welcom:0}})

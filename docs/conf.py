@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # docluster documentation build configuration file, created by
-# sphinx-quickstart on Tue Aug  1 16:32:31 2017.
+# sphinx-quickstart on Tue Aug  1 17:12:01 2017.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.

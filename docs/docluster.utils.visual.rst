@@ -12,14 +12,6 @@ docluster\.utils\.visual\.grapher module
     :undoc-members:
     :show-inheritance:
 
-docluster\.utils\.visual\.tsne module
--------------------------------------
-
-.. automodule:: docluster.utils.visual.tsne
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 
 Module contents
 ---------------

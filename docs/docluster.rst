@@ -6,8 +6,6 @@ Subpackages
 
 .. toctree::
 
-    docluster.classifier
-    docluster.cluster
     docluster.core
     docluster.utils
 

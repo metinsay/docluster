@@ -19,13 +19,6 @@ from utils import (PCA, DistanceMetric, FileFetcher, FileSaver, FileType,
                    Language, Preprocessor, TfIdf, TokenFilter, TweetFetcher,
                    WikiFetcher, Word2Phrase, Word2Vec)
 
-# w2v = Word2Vec(n_workers=8)
-#
-# w2v.fit(documents)
-#
-#
-
-
 wiki_directories = ['/Users/metinsay/Downloads/wikiextractor-master/text/AA']
 onlyfiles = []
 for directory in wiki_directories:
@@ -34,13 +27,16 @@ for directory in wiki_directories:
 
 
 documents = []
-for file_ in onlyfiles[:3]:
+for file_ in onlyfiles[:100]:
     documents.append(BeautifulSoup(open(file_, 'r').read(), "lxml").get_text())
 
 w2p = Word2Phrase(max_phrase_len=4)
 w2p.fit(documents)
 documents = w2p.put_phrases_in_documents(documents)
-print(w2p.phrases)
+#
+# w2v = Word2Vec(n_workers=8)
+#
+# w2v.fit(documents)
 
 
 def tokenize(text):
@@ -59,7 +55,7 @@ clustered_data = tokenize(flattened_data)
 # print(clustered_data)
 
 model = gensim.models.Word2Vec(clustered_data, size=300,
-                               window=10, min_count=0, workers=4, sg=1)
+                               window=10, min_count=0, workers=8, sg=1)
 
 # from sklearn.feature_extraction.text import TfidfVectorizer
 # tfidf_vectorizer = TfidfVectorizer(max_df=0.6, min_df=0.0, use_idf=True, max_features=500,stop_words='english', ngram_range=(1,1), lowercase=True)

@@ -21,7 +21,7 @@ from .token_filter import TokenFilter
 
 class Word2Vec(object):
 
-    def __init__(self, preprocessor=None, n_skips=1, n_negative_samples=100, n_words=10000, embedding_size=300, batch_size=20, window_size=10, learning_rate=0.2, n_epochs=2, n_workers=4, do_plot=False):
+    def __init__(self, preprocessor=None, n_skips=16, n_negative_samples=100, n_words=10000, embedding_size=100, batch_size=32, window_size=10, learning_rate=0.025, n_epochs=1, n_workers=4, do_plot=False):
         """
             A Skip-Gram model Word2Vec with multi-thread training capability.
 
@@ -206,9 +206,8 @@ class Word2Vec(object):
 
             self._sess = sess
             self._sess.run(init_op)
-            index = 0
             for epoch in range(self.n_epochs):
-                index = self._train_one_epoch(data, optimizer, loss, index)
+                self._train_one_epoch(data, optimizer, loss)
 
                 print("Epoch:", (epoch + 1))
 
@@ -216,28 +215,27 @@ class Word2Vec(object):
 
         print("\nTraining complete!")
 
-    def _train_one_epoch(self, data, optimizer, loss, index):
+    def _train_one_epoch(self, data, optimizer, loss):
         """Train one epoch with workers."""
-
         # Each worker generates a batch and trains it until posion pill
+
         def worker_duty(q):
             while True:
-                index = q.get()
-                if index is None:
+                batch = q.pop(0)
+                if batch is None:
                     break
-
-                batch, labels = self._generate_batch(data, index)
+                example, labels, index = batch
                 _, error = self._sess.run([optimizer, loss], feed_dict={
-                    self._batch_input: batch, self._labels_input: labels})
+                    self._batch_input: example, self._labels_input: labels})
 
         # Create a threadsafe queue to store the batch indexes
-        queue = multiprocessing.Queue()
-        for starting_index in range(index, len(data), self.batch_size // self.n_skips):
-            queue.put(starting_index)
+        queue = []
+        for batch in self._generate_batch(data):
+            queue.append(batch)
 
         # Poison pills
         for _ in range(self.n_workers):
-            queue.put(None)
+            queue.append(None)
 
         # Create and run the threads
         workers = []
@@ -249,36 +247,33 @@ class Word2Vec(object):
         for thread in workers:
             thread.join()
 
-        return (starting_index + self.batch_size // self.n_skips) % len(data)
-
-    def _generate_batch(self, data, start_index):
+    def _generate_batch(self, data):
         """Create a batch for a training step in Word2Vec."""
-        print(start_index)
+
         # Initialize variables
-        batch = np.zeros(self.batch_size)
+        example = np.zeros(self.batch_size)
         labels = np.zeros((self.batch_size, 1))
-        span = 2 * self.window_size + 1
-        buf = collections.deque(maxlen=span)
+        n_items = 0
+        index = 0
+        while index < len(data):
+            # `b` in the original word2vec code
+            reduced_window = random.randint(0, self.window_size)
 
-        # Get next data inside the span - wraps around when exceeds data length
-        for _ in range(span):
-            buf.append(data[start_index])
-            start_index = (start_index + 1) % len(data)
+            # now go over all words from the (reduced) window, predicting each one in turn
+            left = max(0, index - self.window_size + reduced_window)
+            for pos2 in range(left, min((index + self.window_size + 1 - reduced_window), len(data) - 1), 1):
+                    # don't train on the `word` itself
+                if n_items == self.batch_size:
+                    yield example, labels, index
+                    example = np.zeros(self.batch_size)
+                    labels = np.zeros((self.batch_size, 1))
+                    n_items = 0
 
-        for i in range(self.batch_size // self.n_skips):
-            target = self.window_size
-            targets_to_avoid = [self.window_size]
-            for j in range(self.n_skips):
-                while target in targets_to_avoid:
-                    target = random.randint(0, span - 1)
-                targets_to_avoid.append(target)
-                batch[i * self.n_skips + j] = buf[self.window_size]
-                labels[i * self.n_skips + j, 0] = buf[target]
-            buf.append(data[start_index])
-            start_index = (start_index + 1) % len(data)
-            # Backtrack a little bit to avoid skipping words in the end of a batch
-        start_index = (start_index + len(data) - span) % len(data)
-        return batch, labels
+                if pos2 != index:
+                    example[n_items] = data[index]
+                    labels[n_items] = data[pos2]
+                    n_items += 1
+            index += 1
 
     def most_similar_words(self, word, n_words=5, include_similarity=False):
         """

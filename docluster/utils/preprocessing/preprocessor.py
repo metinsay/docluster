@@ -48,7 +48,7 @@ class Preprocessor(object):
 
         filtered_tokens = filter(lambda token: not self.token_filter.fit(
             token), tokens) if self.token_filter else tokens
-        lowered_tokens = list(map(lambda token: token.lower(),
+        lowered_tokens = list(map(lambda token: token.lower().split("'")[0],
                                   filtered_tokens)) if self.lower else list(filtered_tokens)
 
         return lowered_tokens

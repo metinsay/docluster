@@ -10,7 +10,7 @@ from .token_filter import TokenFilter
 
 class Word2Phrase(object):
 
-    def __init__(self, min_count=5, threshold=0.005, max_phrase_len=2, delimiter='_', preprocessor=None):
+    def __init__(self, min_count=20, threshold=0.000, max_phrase_len=2, delimiter='_', preprocessor=None):
         self.threshold = threshold
         self.max_phrase_len = max_phrase_len
         self.min_count = min_count

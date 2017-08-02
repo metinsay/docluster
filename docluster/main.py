@@ -1,61 +1,65 @@
-import string
-from multiprocessing import cpu_count
-from os import listdir
-from os.path import isfile, join
-
-import pandas as pd
-
-import gensim
-import nltk
-import numpy as np
-from bs4 import BeautifulSoup
-from classifier import Perceptron
-from cluster.bisecting_kmeans import BisectingKMeans
-from cluster.kmeans import KMeans
-from nltk.corpus import movie_reviews
+# import string
+# from multiprocessing import cpu_count
+# from os import listdir
+# from os.path import isfile, join
+#
+# import pandas as pd
+#
+# import gensim
+# import nltk
+# import numpy as np
+# from bs4 import BeautifulSoup
+# from core import Preprocessor, Word2Phrase, Word2Vec
 #
 # print(model.wv.most_similar('ve'))
-from utils import (PCA, DistanceMetric, FileFetcher, FileSaver, FileType,
-                   Language, Preprocessor, TfIdf, TokenFilter, TweetFetcher,
-                   WikiFetcher, Word2Phrase, Word2Vec)
+# from utils import (DistanceMetric, FileFetcher, FileSaver, FileType, Language,
+#                    TweetFetcher, WikiFetcher)
 
-wiki_directories = ['/Users/metinsay/Downloads/wikiextractor-master/text/AA']
-onlyfiles = []
-for directory in wiki_directories:
-    onlyfiles.extend([join(directory, f)
-                      for f in listdir(directory) if isfile(join(directory, f))])
+# Creating the model
+import pickle
 
+with open('/Users/metinsay/Downloads/polyglot-tr.pkl', 'rb') as f:
+    data = pickle.load(f)
+    print(data)
 
-documents = []
-for file_ in onlyfiles[:100]:
-    documents.append(BeautifulSoup(open(file_, 'r').read(), "lxml").get_text())
-
-w2p = Word2Phrase(max_phrase_len=4)
-w2p.fit(documents)
-documents = w2p.put_phrases_in_documents(documents)
 #
-# w2v = Word2Vec(n_workers=8)
+# wiki_directories = ['/Users/metinsay/Downloads/wikiextractor-master/text/AA']
+# onlyfiles = []
+# for directory in wiki_directories:
+#     onlyfiles.extend([join(directory, f)
+#                       for f in listdir(directory) if isfile(join(directory, f))])
 #
-# w2v.fit(documents)
-
-
-def tokenize(text):
-    html = BeautifulSoup(text, "html5lib").get_text()
-    results = [words for words in [nltk.word_tokenize(
-        sent) for sent in nltk.sent_tokenize(html)]]
-
-    results = [[word.lower().replace('-', '').replace('/', '')
-                for word in sentence] for sentence in results]
-    return [list(filter(lambda token: token not in string.punctuation and not token.isdigit(), sentence)) for sentence in results]
-
-
-clustered_data = documents
-flattened_data = '\n'.join(clustered_data)
-clustered_data = tokenize(flattened_data)
-# print(clustered_data)
-
-model = gensim.models.Word2Vec(clustered_data, size=300,
-                               window=10, min_count=0, workers=8, sg=1)
+#
+# documents = []
+# for file_ in onlyfiles[:5]:
+#     documents.append(BeautifulSoup(open(file_, 'r').read(), "lxml").get_text())
+#
+# w2p = Word2Phrase(max_phrase_len=4)
+# w2p.fit(documents)
+# documents = w2p.put_phrases_in_documents(documents)
+# #
+# # w2v = Word2Vec(n_workers=8)
+# #
+# # w2v.fit(documents)
+#
+#
+# def tokenize(text):
+#     html = BeautifulSoup(text, "html5lib").get_text()
+#     results = [words for words in [nltk.word_tokenize(
+#         sent) for sent in nltk.sent_tokenize(html)]]
+#
+#     results = [[word.lower().replace('-', '').replace('/', '')
+#                 for word in sentence] for sentence in results]
+#     return [list(filter(lambda token: token not in string.punctuation and not token.isdigit(), sentence)) for sentence in results]
+#
+#
+# clustered_data = documents
+# flattened_data = '\n'.join(clustered_data)
+# clustered_data = tokenize(flattened_data)
+# # print(clustered_data)
+#
+# model = gensim.models.Word2Vec(clustered_data, size=300,
+#                                window=10, min_count=0, workers=8, sg=1, iter=5)
 
 # from sklearn.feature_extraction.text import TfidfVectorizer
 # tfidf_vectorizer = TfidfVectorizer(max_df=0.6, min_df=0.0, use_idf=True, max_features=500,stop_words='english', ngram_range=(1,1), lowercase=True)

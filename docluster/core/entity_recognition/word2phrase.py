@@ -63,7 +63,4 @@ class Word2Phrase(object):
 
     def _groupwise(self, iterable, n_groups):
         "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-        # a, b = tee(iterable)
-        # next(b, None)
-        # return zip(a, b)
         return [tuple(iterable[i:i + n_groups]) for i in range(len(iterable) - n_groups - 1)]

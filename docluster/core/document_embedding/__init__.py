@@ -1,2 +1,2 @@
-from doc2vec import *
-from tfidf import *
+from .doc2vec import *
+from .tfidf import *

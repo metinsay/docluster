@@ -1,2 +1,2 @@
-from lda import *
-from text_rank import *
+from .lda import *
+from .text_rank import *

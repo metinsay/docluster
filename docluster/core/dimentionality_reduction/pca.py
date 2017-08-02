@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class PCA(DimensionReducer):
+class PCA(object):
 
     def __init__(self, n_components=2):
         """ Initialize PCA Dimension Reducer

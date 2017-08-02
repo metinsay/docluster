@@ -3,10 +3,8 @@ from sklearn.decomposition import TruncatedSVD
 
 import matplotlib.pyplot as plt
 import numpy as np
+# from core import PCA
 from scipy.spatial import Voronoi, voronoi_plot_2d
-
-from ..dimension_reduction.pca import PCA
-from .tsne import *
 
 
 class Grapher(object):
@@ -56,10 +54,5 @@ class Grapher(object):
 
     def reduce_data(self, data):
         # Reduce the dimension to 2D with PCA
-        if data.shape[1] > 2:
-            pca = PCA(n_components=2)
-            svd = TruncatedSVD(n_components=5, n_iter=7, random_state=42)
-            data = svd.fit_transform(data)
-            # data = tsne(data)
 
         return data

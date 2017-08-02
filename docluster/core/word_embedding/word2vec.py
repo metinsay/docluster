@@ -7,12 +7,15 @@ import threading
 
 import pandas as pd
 
+import deepcopy
 import numpy as np
 import tensorflow as tf
+from scipy.special import expit
 from utils import DistanceMetric, FileFetcher, FileSaver, FileType
 
 from ..document_embedding import TfIdf
 from ..preprocessing import Preprocessor, TokenFilter
+from .word_embeddings import WordEmbeddings
 
 
 class Word2Vec(object):
@@ -80,7 +83,13 @@ class Word2Vec(object):
         self.n_words = n_words
         self.n_workers = n_workers
 
+        self._total_loss = 0
         self._dist_metric = DistanceMetric.cosine
+        self.embeddings = WordEmbeddings(size=embedding_size, n_words=n_words)
+        self.locks = np.ones(n_words)
+
+        self.syn1 = np.zeros((n_words, embedding_size))
+        self.syn1neg = np.zeros((n_words, embedding_size))
 
     def fit(self, documents):
         """
@@ -92,15 +101,12 @@ class Word2Vec(object):
                 the documents that the Word2Vec model is going to learn the embeddings from.
         """
         n_words_trained = 0
-        tokens, self.vocab, data, frequencies, self.diction, self.reverse_diction = self._build_dataset(
+        tokens, self.vocab, data, self._frequencies, self.diction, self.reverse_diction = self._build_dataset(
             documents)
         n_tokens = len(tokens)
         n_vocab = len(self.vocab)
         words_per_epoch = n_vocab / self.n_epochs
-        batch_logit, negative_samples_logit = self._build_graph(data, frequencies)
-        loss = self._build_loss_metric(batch_logit, negative_samples_logit)
-        optimizer = self._build_optimizer(loss, words_per_epoch, n_words_trained)
-        self._train(data, optimizer, loss)
+        self._cum_dist = self._build_cum_dist()
 
     def _build_dataset(self, documents):
         """Preprocesses the documents and creates the dataset for fitting."""
@@ -109,13 +115,13 @@ class Word2Vec(object):
         tfidf = TfIdf(do_idf=False, preprocessor=self.preprocessor, n_words=self.n_words)
         tfidf.fit(documents)
 
-        # Flatten the document tokens to make them on long list
+        # Flatten the document tokens to create one long list
         tokens = list(np.hstack(np.array(tfidf.document_tokens)))
 
-        # Create the vocab list with 'UNK' for  vocab that couldn't make the vocab list
-        vocab = ['UNK'] + tfidf.vocab
+        # Create the vocab list with 'UNK' for vocab that couldn't make the vocab list
+        vocab = tfidf.vocab
         vocab_set = set(vocab)
-        self.n_words += 1
+
         diction = {token: index for index, token in enumerate(vocab)}
         reverse_diction = dict(zip(diction.values(), diction.keys()))
 
@@ -124,74 +130,16 @@ class Word2Vec(object):
                         if token in vocab_set else 0, tokens))
 
         # Get the frequencies of tokens and add the frequency of 'UNK' at the beginning
-        frequencies = np.insert(tfidf.total_term_freq, 0, data.count(0))[:self.n_words]
+        # frequencies = np.insert(tfidf.total_term_freq, 0, data.count(0))[:self.n_words]
+        frequencies = tfidf.total_term_freq[:self.n_words]
 
         return tokens, vocab, data, frequencies, diction, reverse_diction
 
-    def _build_graph(self, data, frequencies):
-        """Build the graph that is going to be trained."""
+    def _build_cum_dist(self, distortion=0.75, domain=2**31 - 1):
 
-        self._batch_input = tf.placeholder(tf.int64, shape=[self.batch_size])
-        self._labels_input = tf.placeholder(tf.int64, shape=[self.batch_size, 1])
-
-        width = 0.5 / self.embedding_size
-
-        embeddings_dim = [self.n_words, self.embedding_size]
-        self._embeddings = tf.Variable(tf.random_uniform(
-            embeddings_dim, minval=-width, maxval=width), name="embeddings")
-
-        batch_embeddings = tf.nn.embedding_lookup(self._embeddings, self._batch_input)
-
-        softmax_weights = tf.Variable(tf.zeros(embeddings_dim), name="softmax_weights")
-        softmax_biases = tf.Variable(tf.zeros([self.n_words]), name="softmax_biases")
-
-        label_weights = tf.nn.embedding_lookup(softmax_weights, self._labels_input)
-        label_biases = tf.nn.embedding_lookup(softmax_biases, self._labels_input)
-
-        negative_sample_ids, _, _ = tf.nn.fixed_unigram_candidate_sampler(true_classes=self._labels_input, num_true=1,
-                                                                          num_sampled=self.n_negative_samples, unique=True,
-                                                                          range_max=self.n_words, distortion=0.75, unigrams=list(frequencies))
-
-        negative_sample_weights = tf.nn.embedding_lookup(
-            softmax_weights, negative_sample_ids)
-        negative_sample_biases = tf.nn.embedding_lookup(
-            softmax_biases, negative_sample_ids)
-
-        batch_logit = tf.reduce_sum(tf.multiply(
-            batch_embeddings, label_weights), 1) + label_biases
-
-        reduced_negative_samples = tf.reshape(
-            negative_sample_biases, [self.n_negative_samples])
-        negative_samples_logit = tf.matmul(
-            batch_embeddings, negative_sample_weights, transpose_b=True) + reduced_negative_samples
-
-        return batch_logit, negative_samples_logit
-
-    def _build_loss_metric(self, batch_logit, negative_samples_logit):
-        """Build loss metric that will be optimized."""
-
-        batch_loss = tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=tf.ones_like(batch_logit), logits=batch_logit)
-        negative_samples_loss = tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=tf.zeros_like(negative_samples_logit), logits=negative_samples_logit)
-
-        # NCE-loss is the sum of the true and noise (sampled words)
-        # contributions, averaged over the batch.
-        loss = (tf.reduce_sum(batch_loss) +
-                tf.reduce_sum(negative_samples_loss)) / self.batch_size
-        return loss
-
-    def _build_optimizer(self, loss, words_per_epoch, n_words_trained):
-        """Build the optimizer of the loss."""
-
-        n_words_to_train = float(words_per_epoch * self.n_epochs)
-        learning_rate = self.learning_rate * \
-            tf.maximum(0.0001, 1.0 - tf.cast(n_words_trained,
-                                             tf.float32) / n_words_to_train)
-        optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-        optimizer = optimizer.minimize(loss, global_step=tf.Variable(0, name="global_step"),
-                                       gate_gradients=optimizer.GATE_NONE)
-        return optimizer
+        freq_total = np.sum(self._frequencies ** distortion)
+        cum_dist = np.cumsum(self._frequencies) * domain / freq_total
+        return cum_dist
 
     def _train(self, data, optimizer, loss):
         """Train the model."""
@@ -211,65 +159,121 @@ class Word2Vec(object):
 
         print("\nTraining complete!")
 
+    def _train_one_example(self, example, label, alpha):
+
+        predict_word = model.wv.vocab[word]  # target word (NN output)
+
+        # input word (NN input/projection layer)
+        example_index = self._diction[example]
+        embedding = self.embeddings.vectors[example_index]
+        lock = self.locks[example_index]
+
+        # work on the entire tree at once, to push as much work into numpy's C routines as possible (performance)
+        # 2d matrix, codelen x layer1_size
+        l2a = deepcopy(self.syn1[predict_word.point])
+        prod_term = np.dot(embedding, l2a.T)
+        fa = expit(prod_term)  # propagate hidden -> output
+        # vector of error gradients multiplied by the learning rate
+        ga = (1 - predict_word.code - fa) * alpha
+        if learn_hidden:
+            model.syn1[predict_word.point] += outer(ga, l1)  # learn hidden -> output
+
+        sgn = (-1.0)**predict_word.code  # `ch` function, 0 -> 1, 1 -> -1
+        lprob = -log(expit(-sgn * prod_term))
+        self._total_loss += sum(lprob)
+
+        if model.negative:
+            # use this word (label = 1) + `negative` other random words not from this sentence (label = 0)
+            word_indices = [predict_word.index]
+            while len(word_indices) < model.negative + 1:
+                w = model.cum_table.searchsorted(
+                    model.random.randint(model.cum_table[-1]))
+                if w != predict_word.index:
+                    word_indices.append(w)
+            l2b = model.syn1neg[word_indices]  # 2d matrix, k+1 x layer1_size
+            prod_term = dot(l1, l2b.T)
+            fb = expit(prod_term)  # propagate hidden -> output
+            # vector of error gradients multiplied by the learning rate
+            gb = (model.neg_labels - fb) * alpha
+            if learn_hidden:
+                model.syn1neg[word_indices] += outer(gb, l1)  # learn hidden -> output
+
+            # loss component corresponding to negative sampling
+            if compute_loss:
+                # for the sampled words
+                self._total_loss -= sum(log(expit(-1 * prod_term[1:])))
+                # for the output word
+                self._total_loss -= log(expit(prod_term[0]))
+
+        if learn_vectors:
+            # learn input -> hidden (mutates model.wv.syn0[word2.index], if that is l1)
+            embedding += neu1e * lock_factor
+
     def _train_one_epoch(self, data, optimizer, loss):
         """Train one epoch with workers."""
         # Each worker generates a batch and trains it until posion pill
 
-        def worker_duty(q):
+        def worker_duty():
+            """The duty of a single worker."""
+
             while True:
-                batch = q.pop(0)
+                batch = queue.get()
                 if batch is None:
                     break
-                example, labels, index = batch
-                _, error = self._sess.run([optimizer, loss], feed_dict={
-                    self._batch_input: example, self._labels_input: labels})
+                examples, labels, alphas = batch
+                for example, label, alpha in batch:
+                    self._train_one_example(example, label, alpha)
+
+        def generate_batch():
+            """Create a batch for a training step in Word2Vec."""
+
+            # Initialize variables
+            example = np.zeros(self.batch_size)
+            labels = np.zeros((self.batch_size, 1))
+            alphas = np.zeros(self.batch_size)
+            n_items = 0
+            index = 0
+
+            while index < len(data):
+                reduced_window = random.randint(0, self.window_size)
+                if data[index] not is None:
+
+                    left = max(0, index - self.window_size + reduced_window)
+                    right = min((index + self.window_size + 1 -
+                                 reduced_window), len(data) - 1)
+                    for pos2 in range(left, right, 1):
+
+                        if n_items == self.batch_size:
+                            queue.put((example, labels, index))
+                            example = np.zeros(self.batch_size)
+                            labels = np.zeros((self.batch_size, 1))
+                            n_items = 0
+
+                        if pos2 != index and data[pos2] not is None:
+                            example[n_items] = data[pos2]
+                            labels[n_items] = data[index]
+                            alpha = self.learning_rate - \
+                                (self.learning_rate - 0.001) * (index / self.n_words)
+                            alphas[n_items] = max(0.001, alpha)
+                            n_items += 1
+                index += 1
+
+            # Poison pills
+            for _ in range(n_workers):
+                queue.put(None)
 
         # Create a threadsafe queue to store the batch indexes
-        queue = []
-        for batch in self._generate_batch(data):
-            queue.append(batch)
-
-        # Poison pills
-        for _ in range(self.n_workers):
-            queue.append(None)
+        queue = multiprocessing.Queue(maxsize=2 * self.n_workers)
 
         # Create and run the threads
-        workers = []
-        for _ in range(self.n_workers):
-            thread = threading.Thread(target=worker_duty, kwargs={'q': queue})
-            thread.start()
-            workers.append(thread)
+        workers = [threading.Thread(target=generate_batch)]
+        workers.extend([threading.Thread(target=worker_duty) _ in range(self.n_workers - 1)])
+
+        for worker in workers:
+            worker.start()
 
         for thread in workers:
             thread.join()
-
-    def _generate_batch(self, data):
-        """Create a batch for a training step in Word2Vec."""
-
-        # Initialize variables
-        example = np.zeros(self.batch_size)
-        labels = np.zeros((self.batch_size, 1))
-        n_items = 0
-        index = 0
-        while index < len(data):
-            # `b` in the original word2vec code
-            reduced_window = random.randint(0, self.window_size)
-
-            # now go over all words from the (reduced) window, predicting each one in turn
-            left = max(0, index - self.window_size + reduced_window)
-            for pos2 in range(left, min((index + self.window_size + 1 - reduced_window), len(data) - 1), 1):
-                    # don't train on the `word` itself
-                if n_items == self.batch_size:
-                    yield example, labels, index
-                    example = np.zeros(self.batch_size)
-                    labels = np.zeros((self.batch_size, 1))
-                    n_items = 0
-
-                if pos2 != index:
-                    example[n_items] = data[index]
-                    labels[n_items] = data[pos2]
-                    n_items += 1
-            index += 1
 
     def most_similar_words(self, word, n_words=5, include_similarity=False):
         """

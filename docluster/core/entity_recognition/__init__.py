@@ -1,2 +1,2 @@
-from crf import *
-from word2phrase import *
+from .crf import *
+from .word2phrase import *

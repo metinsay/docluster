@@ -1,7 +1,7 @@
 
-class Heap(self):
+class Heap(object):
 
-    self __init__(self, data):
+    def __init__(self, data):
         self.data = data
 
     def _heapify(self):

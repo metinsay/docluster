@@ -4,10 +4,10 @@ import multiprocessing
 import os
 import random
 import threading
+from copy import deepcopy
 
 import pandas as pd
 
-import deepcopy
 import numpy as np
 import tensorflow as tf
 from scipy.special import expit
@@ -236,7 +236,7 @@ class Word2Vec(object):
 
             while index < len(data):
                 reduced_window = random.randint(0, self.window_size)
-                if data[index] not is None:
+                if data[index] is not None:
 
                     left = max(0, index - self.window_size + reduced_window)
                     right = min((index + self.window_size + 1 -
@@ -249,7 +249,7 @@ class Word2Vec(object):
                             labels = np.zeros((self.batch_size, 1))
                             n_items = 0
 
-                        if pos2 != index and data[pos2] not is None:
+                        if pos2 != index and data[pos2] is not None:
                             example[n_items] = data[pos2]
                             labels[n_items] = data[index]
                             alpha = self.learning_rate - \
@@ -267,7 +267,8 @@ class Word2Vec(object):
 
         # Create and run the threads
         workers = [threading.Thread(target=generate_batch)]
-        workers.extend([threading.Thread(target=worker_duty) _ in range(self.n_workers - 1)])
+        workers.extend([threading.Thread(target=worker_duty)
+                        for _ in range(self.n_workers - 1)])
 
         for worker in workers:
             worker.start()

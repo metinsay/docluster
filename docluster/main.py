@@ -10,20 +10,8 @@ import nltk
 import numpy as np
 from bs4 import BeautifulSoup
 from core import Preprocessor, Word2Phrase
-from utils import (BST, DistanceMetric, FileFetcher, FileSaver, FileType,
+from utils import (BST, DistanceMetric, FileFetcher, FileSaver, FileType, Heap,
                    Language, Trie, TweetFetcher, WikiFetcher)
-
-bst = BST()
-bst.insert(15, None)
-bst.insert(10, None)
-bst.insert(20, None)
-bst.insert(13, None)
-bst.insert(14, None)
-bst.insert(12, None)
-bst.insert(11, None)
-bst.insert(9, None)
-bst.insert(40, None)
-bst.insert(17, None)
 
 # Creating the model
 # import pickle
@@ -32,7 +20,7 @@ bst.insert(17, None)
 #     data = pickle.load(f)
 #     print(data)
 
-#
+
 # wiki_directories = ['/Users/metinsay/Downloads/wikiextractor-master/text/AA']
 # onlyfiles = []
 # for directory in wiki_directories:
@@ -41,7 +29,7 @@ bst.insert(17, None)
 #
 #
 # documents = []
-# for file_ in onlyfiles[:3]:
+# for file_ in onlyfiles[:10]:
 #     documents.append(BeautifulSoup(open(file_, 'r').read(), "lxml").get_text())
 #
 #
@@ -51,12 +39,14 @@ bst.insert(17, None)
 # documents = w2p.put_phrases_in_documents(documents)
 #
 # tokens = Preprocessor().fit(documents[0])
-# #
-# # w2v = Word2Vec(n_workers=8)
-# #
-# # w2v.fit(documents)
+# model = gensim.models.Word2Vec(sentences, size=300, window=10, min_count=0, workers=4)
 #
+# w2v = Word2Vec(n_workers=8)
 #
+# w2v.fit(documents)
+#
+
+
 # def tokenize(text):
 #     html = BeautifulSoup(text, "html5lib").get_text()
 #     results = [words for words in [nltk.word_tokenize(
@@ -74,4 +64,4 @@ bst.insert(17, None)
 #
 # model = gensim.models.Word2Vec(clustered_data, size=300,
 #                                window=10, min_count=0, workers=8, sg=1, iter=5)
-# trie = Trie(tokens)
+# # trie = Trie(tokens)

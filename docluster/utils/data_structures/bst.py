@@ -36,7 +36,7 @@ class BSTNode(object):
             if self.has_left_child:
                 for left_child in self.left_child:
                     yield left_child
-            yield self.key
+            yield self
             if self.has_right_child:
                 for right_child in self.right_child:
                     yield right_child
@@ -90,6 +90,7 @@ class BST(object):
             put(self.root)
         else:
             self.root = BSTNode(key, value)
+        self.size += 1
 
     def get(self, key):
         if not self.root:

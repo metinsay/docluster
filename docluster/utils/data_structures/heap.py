@@ -1,10 +1,11 @@
 
 class Heap(object):
 
-    def __init__(self, data):
-        self.data = data
+    def __init__(self):
+        self.heap_list = []
+        self.size = 0
 
-    def _heapify(self):
+    def insert(self, key):
         pass
 
     def push(self):

@@ -11,20 +11,28 @@ class Heap(object):
         index = len(self.data) - 1
         return self._trickle_up(index)
 
-    def pop_max():
+    def delete(self, index):
+        if index > len(self.data) - 1 or len(data) < 2:
+            raise ValueError('Out of of bounds.')
+
+        self.data[index] = self.data[-1]
+        del self.data[-1]
+
+    def get_max(self):
+        return self.data[1] if len(self.data) > 1 else None
+
+    def pop_max(self):
+        # TODO: Implement Heap Pop Max
         pass
-
-    def _get_left_child(self, index):
-        return data[((index + 1) // 2) - 1]
-
-    def _get_right_child(self, index):
-        return data[(index + 1) // 2]
 
     def _get_parent_index(self, index):
         return index // 2
 
     def _get_parent(self, index):
         return self.data[self._get_parent_index(index)]
+
+    def _trickle_down(self, index):
+        node = self.data[index]
 
     def _trickle_up(self, index):
         node = self.data[index]

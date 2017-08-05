@@ -12,12 +12,33 @@ from .kmeans import KMeans
 class BisectingKMeans(object):
 
     def __init__(self, k, n_iterations=4, dist_metric=DistanceMetric.eucledian, eps=1e-4, do_plot=False):
-        """ Initialize Bisecting K-Means Clusterer
-        k - number of clusters to fit
-        n_iterations - number of iterations of k-means on each cluster division
-        dist_metric - the distance metric
-        eps - stopping criterion tolerance
-        do_plot - voronoi plot after fitting
+        """
+            An implementation of Bisecting K-Means clustering algorithm.
+
+            Paramaters:
+            -----------
+            k : int
+                Number of clusters to fit.
+            n_iterations : int
+                Number of iterations of regular KMeans with k=2 on each bisection.
+            dist_metric : DistanceMetric
+                The distance metric which is going to be used to calculates
+                distance between vectors.
+            eps : float
+                Stopping criterion tolerance. This is based on the difference
+                between the last epoch and the current epoch.
+            do_plot : bool
+                If to plot a voronoi diagram of the clusters after fit.
+
+            Attributes:
+            -----------
+            cost : float
+                The sum of distances between centroids and the points belonging
+                into the cluster that centroid is defining.
+            clusters : list(int)
+                Each data points' cluster index starting from 0.
+            centroids  : list(list(float))
+                The coordinates of each centroid.
         """
         self.k = k
         self.n_iterations = n_iterations
@@ -29,15 +50,19 @@ class BisectingKMeans(object):
         self.cost = None
 
     def fit(self, data):
-        """ Run the bisecting k-means algorithm
-        data - an NxD pandas DataFrame
-
-        returns: a tuple containing
-            centroids - a KxD ndarray containing the learned means
-            clusters - an N-vector of each point's cluster index
-            cost - the total cost of all the points to their assigned cluster
         """
+            Run K-Means on the data.
 
+            Paramaters:
+            -----------
+            data : list(list(float))
+                The data that is going to be clustered.
+
+            Return:
+            -------
+            clusters : list(int)
+                Each data points' cluster index starting from 0.
+        """
         n, d = data.shape
         clusters = np.zeros(n)
         km = KMeans(2, dist_metric=self.dist_metric, eps=self.eps)
@@ -74,4 +99,4 @@ class BisectingKMeans(object):
             Grapher().plot_voronoi(data, n_clusters=self.k, clusters=clusters, centroids=centroids,
                                    title="Bisecting K-means clustering with k= " + str(self.k))
 
-        return (centroids, clusters, cost)
+        return clusters

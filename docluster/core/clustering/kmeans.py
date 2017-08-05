@@ -25,6 +25,16 @@ class KMeans(object):
                 between the last epoch and the current epoch.
             do_plot : bool
                 If to plot a voronoi diagram of the clusters after fit.
+
+            Attributes:
+            -----------
+            cost : float
+                The sum of distances between centroids and the points belonging
+                into the cluster that centroid is defining.
+            clusters : list(int)
+                Each data points' cluster index starting from 0.
+            centroids  : list(list(float))
+                The coordinates of each centroid.
         """
 
         self.k = k

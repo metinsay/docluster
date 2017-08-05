@@ -3,6 +3,20 @@
 class Trie(object):
 
     def __init__(self, words=None):
+        """
+            A recursive data type implementation of Trie tree.
+
+            Paramaters:
+            -----------
+            words : list(str)
+                Words that is going to be inserted into the trie.
+
+            Attributes:
+            -----------
+            children : dict(char : Trie)
+                The children of the current Trie.
+        """
+
         self.frequency = 0
         self.children = {}
 
@@ -11,6 +25,15 @@ class Trie(object):
                 self.insert(word)
 
     def insert(self, word, frequency=None):
+        """
+            Insert word into the trie.
+
+            Paramaters:
+            -----------
+            word : str
+                Word that is going to be inserted into the trie.
+        """
+
         children = self.children
         for i, c in enumerate(word):
             if c in children:
@@ -24,6 +47,20 @@ class Trie(object):
                 children = child.children
 
     def find(self, prefix):
+        """
+            Insert word into the trie.
+
+            Paramaters:
+            -----------
+            prefix : str
+                Prefix that is going to be searched inside the trie.
+
+            Return:
+            -------
+            found_trie : Trie
+                The remaining trie after the prefix.
+        """
+
         if prefix == '':
             return self
         children = self.children
@@ -37,23 +74,64 @@ class Trie(object):
                 return None
 
     def __contains__(self, word):
+        """
+            If the trie contains the word.
+
+            Paramaters:
+            -----------
+            word : str
+                Word that is being searched inside the trie.
+
+            Return:
+            -------
+            found : bool
+                If the word exists inside the trie.
+        """
+
         trie = self.find(word)
         return trie.frequency > 0 if trie else False
 
     def __iter__(self):
+        """
+            Iterator that yields (word, freq) pairs.
+
+            Yield:
+            ------
+            pair : (str, int)
+                Pair of word and frequency that belongs in trie.
+        """
+
         words = []
 
         def iterate(word, trie):
+        """Recursive helper function to iterate."""
             if trie:
                 if trie.frequency > 0:
                     words.append([word, trie.frequency])
                 for char, child in trie.children.items():
                     iterate(word + char, child)
+
         iterate('', self)
         for word, freq in words:
             yield [word, freq]
 
     def autocomplete(self, prefix, n_suggestions=5):
+        """
+            Autocomplete the prefix.
+
+            Paramaters:
+            -----------
+            prefix : str
+                Prefix that the autocompletion will be based on.
+            n_suggestions : int
+                Number of autocomplete suggestions to be returned.
+
+            Return:
+            -------
+            suggestions : list(str)
+                Autocomplete suggestions.
+        """
+
         if not self.find(prefix):
             return []
         words = []

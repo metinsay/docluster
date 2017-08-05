@@ -10,12 +10,23 @@ from utils import DistanceMetric, Grapher
 class KMeans(object):
 
     def __init__(self, k, dist_metric=DistanceMetric.eucledian, eps=1e-4, do_plot=False):
-        """ Initialize K-Means Clusterer
-        k - number of clusters to fit
-        dist_metric - the distance metric
-        eps - stopping criterion tolerance
-        do_plot - voronoi plot after fitting
         """
+            An implementation of K-Means clustering algorithm.
+
+            Paramaters:
+            -----------
+            k : int
+                Number of clusters to fit.
+            dist_metric : DistanceMetric
+                The distance metric which is going to be used to calculates
+                distance between vectors.
+            eps : float
+                Stopping criterion tolerance. This is based on the difference
+                between the last epoch and the current epoch.
+            do_plot : bool
+                If to plot a voronoi diagram of the clusters after fit.
+        """
+
         self.k = k
         self.dist_metric = dist_metric
         self.eps = eps
@@ -25,14 +36,18 @@ class KMeans(object):
         self.cost = None
 
     def fit(self, data):
-        """ Run the k-means algorithm
-        data - an NxD pandas DataFrame
+        """
+            Run K-Means on the data.
 
-        returns:
-            a tuple containing
-            centroids - a KxD ndarray containing the learned means
-            clusters - an N-vector of each point's cluster index
-            cost - the total cost of all the points to their assigned cluster
+            Paramaters:
+            -----------
+            data : list(list(float))
+                The data that is going to be clustered.
+
+            Return:
+            -------
+            clusters : list(int)
+                Each data points' cluster index starting from 0.
         """
         n, d = data.shape
         # randomly choose k points as initial centroids
@@ -65,15 +80,22 @@ class KMeans(object):
         return (centroids, clusters, cost)
 
     def get_distances_btw_centroids(self, dist_metric=None, do_plot=False):
-        """ Get the distances between each centroid
-            dist_metric - the distance metric
-            do_plot - heat map plot
-
-        returns:
-            dists - a KxK ndarray where dists[i][j] give the distance
-                    between i th and j th centroids
         """
+            Get the distances between each centroid.
 
+            Paramaters:
+            -----------
+            dist_metric : DistanceMetric
+                The distance metric that the distance is going to be calculated.
+            do_plot : bool
+                If to plot a heat map.
+
+            Return:
+            -------
+            dists : list(list(float))
+                The distance between centroids where dists[i][j] give the distance
+                between i th and j th centroids.
+        """
         if not self.cost:
             assert(
                 'You need to fit the data first in order to get distances between centroids.')

@@ -4,21 +4,38 @@ import numpy as np
 class PCA(object):
 
     def __init__(self, n_components=2):
-        """ Initialize PCA Dimension Reducer
-        n_components - number of components the data is going to reduced
         """
+            An implementation of Principal Components Analysis.
+
+            Paramaters:
+            -----------
+            n_components : int
+                Number of components the data is going to reduced.
+
+            Attributes:
+            -----------
+            eig_vectors : list(list(float))
+                The eigenvectors of the data.
+        """
+
         self.n_components = n_components
         self.eig_vectors = None
 
     def fit(self, data):
-        """ Apply PCA on the data
-        data - an NxD pandas DataFrame
-
-        returns:
-            reduced_data - a Nxn_components ndarray that represents
-                           the pricipal components of data
-
         """
+            Apply PCA on the data.
+
+            Paramaters:
+            -----------
+            n_components : int
+                Number of components the data is going to reduced.
+
+            Return:
+            -----------
+            reduced_data : list(list(float))
+                The pricipal components of data reduced to the n_components.
+        """
+
         # Estimate the covariance matrix
         mean = np.mean(data, axis=0)
         centered_data = data - mean

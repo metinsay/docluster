@@ -10,7 +10,7 @@ class PCA(object):
             Paramaters:
             -----------
             n_components : int
-                Number of components the data is going to reduced.
+                The number of components the data is going to reduced.
 
             Attributes:
             -----------
@@ -27,8 +27,8 @@ class PCA(object):
 
             Paramaters:
             -----------
-            n_components : int
-                Number of components the data is going to reduced.
+            data : list(list(float))
+                The data that is going to be reduced.
 
             Return:
             -----------

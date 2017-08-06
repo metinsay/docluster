@@ -17,3 +17,5 @@ class DistanceMetric(Enum):
 
     cosine = staticmethod(lambda v1, v2: 1 - (np.sum(array(v1) * array(v2),
                                                      axis=1) / (norm(array(v1), axis=1) * norm(array(v2), axis=1))))
+
+    hamming = staticmethod(lambda v1, v2: np.sum((array(v1) == array(v2)), axis=1))

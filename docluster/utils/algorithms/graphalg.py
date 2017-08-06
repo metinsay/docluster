@@ -19,12 +19,21 @@ def bfs(graph, search):
 """ TRAVERSAL """
 
 
-def dfs_traverse(graph):
+def dfs_traverse(graph, source):
     pass
 
 
-def bfs_traverse(graph):
-    pass
+def bfs_traverse(graph, source):
+    visited = set()
+    queue = [source]
+    while len(queue) > 0:
+        cur_vertex = queue.pop(0)
+        visited.add(cur_vertex)
+        yield cur_vertex
+        for neighbour in graph.get_neighbours(cur_vertex):
+            if neighbour not in visited:
+                queue.append(neighbour)
+                visited.add(neighbour)
 
 
 """ SORT """

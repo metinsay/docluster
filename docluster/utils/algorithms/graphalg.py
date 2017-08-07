@@ -20,7 +20,16 @@ def bfs(graph, search):
 
 
 def dfs_traverse(graph, source):
-    pass
+    visited = set()
+
+    def dfs_helper(node):
+        visited.add(node)
+        yield node
+        for neighbour in graph.get_neighbours(node):
+            if neighbour not in visited:
+                yield from dfs_helper(neighbour)
+
+    yield from dfs_helper(source)
 
 
 def bfs_traverse(graph, source):
@@ -37,6 +46,10 @@ def bfs_traverse(graph, source):
 
 
 """ SORT """
+
+
+def topological_sort(graph):
+    pass
 
 
 """ SHORTEST PATH """

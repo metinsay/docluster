@@ -42,5 +42,8 @@ class Flow(object):
         self.graph.link(start_model, end_model, override=True, directed=True)
 
     def chain(self, *models):
+        if len(models) < 2:
+            raise ValueError("Chaining needs at least two models.")
+
         for start_model, end_model in seqeuencealg.n_gram(models, 2):
             self.graph.link(start_model, end_model, override=True, directed=True)

@@ -1,8 +1,22 @@
+import random
+
 """ CHECKS """
 
 
 def check_cycles(graph):
     return False
+
+
+def check_tree(graph):
+    pass
+
+
+def check_reachability(graph, vertex1, vertex2):
+    pass
+
+
+def check_strong_connectivity(graph):
+    pass
 
 
 """ SEARCH """
@@ -52,6 +66,10 @@ def topological_sort(graph):
     pass
 
 
+def get_all_topological_sorts(graph):
+    pass
+
+
 """ SHORTEST PATH """
 
 
@@ -71,4 +89,36 @@ def johnson(graph):
     pass
 
 
+""" MINIMUM SPANNING TREE """
+
+
 """ CONNECTIVITY """
+
+
+def get_disjoint_subgraphs(graph):
+    vertices = graph.vertices
+    visited = set()
+    colorings = {}
+    subgraph_index = 0
+    while len(vertices) != len(visited):
+        unvisited = vertices - visited
+        source = random.choice(list(unvisited))
+        for vertex in bfs_traverse(graph, source):
+            coloring = colorings.get(subgraph_index, set())
+            coloring.add(vertex)
+            colorings[subgraph_index] = coloring
+            visited.add(vertex)
+
+        subgraph_index += 1
+    return colorings
+
+
+""" OTHER """
+
+
+def find_mother_vertex(graph):
+    pass
+
+
+def d_seperation():
+    pass

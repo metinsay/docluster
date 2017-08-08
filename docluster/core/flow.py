@@ -1,5 +1,6 @@
 import pandas as pd
 
+import numpy as np
 from utils import Graph, Timer, graphalg, seqeuencealg
 
 
@@ -16,22 +17,23 @@ class Flow(object):
 
         prevData = data
 
-        models_in_execution_order = []
+        models = []
         times = []
-        print(self.graph)
+        shapes = []
+
         for model in graphalg.bfs_traverse(self.graph, m):
-            print(model)
             if self.do_analytics:
                 with Timer() as t:
                     prevData = model.fit(prevData)
 
-                models_in_execution_order.append(model)
+                models.append(model)
                 times.append(t.interval)
+                shapes.append(np.array(prevData).shape)
             else:
                 prevData = model.fit(prevData)
 
         if self.do_analytics:
-            analytics = pd.DataFrame({'Time (s)': times})
+            analytics = pd.DataFrame({'Time (s)': times, 'Return shape': shapes})
             analytics.index = models_in_execution_order
             print(analytics)
         return prevData

@@ -115,9 +115,28 @@ def get_disjoint_subgraphs(graph):
 
 """ OTHER """
 
+# http://www.geeksforgeeks.org/find-a-mother-vertex-in-a-graph/
 
-def find_mother_vertex(graph):
-    pass
+
+def get_mother_vertex(graph):
+    vertices = graph.vertices
+    visited = set()
+    for source in list(vertices):
+        for vertex in dfs_traverse(graph, source):
+            print(vertex)
+            visited.add(vertex)
+            if len(vertices) == len(visited):
+                candidate = source
+                break
+        else:
+            continue
+        break
+    print(visited)
+    visited = set()
+    for vertex in dfs_traverse(graph, candidate):
+        visited.add(vertex)
+
+    return candidate if len(visited) == len(vertices) else None
 
 
 def d_seperation():

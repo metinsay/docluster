@@ -1,10 +1,9 @@
 import requests
 
-from ..constants.language import Language
-from .data_fetcher import DataFetcher
+from docluster.utils.constants import Language
 
 
-class WikiFetcher(DataFetcher):
+class WikiFetcher(object):
     def __init__(self, titles, suffix='', filterNone=False, language=Language.english, do_browse=False):
         """ Initialize WikiFetcher
         titles - a list of page titles that is going to be fetched, where

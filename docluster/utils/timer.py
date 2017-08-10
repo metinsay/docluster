@@ -9,6 +9,6 @@ class Timer(object):
         self.start_time = time.clock()
         return self
 
-    def __exit__(self):
+    def __exit__(self, *args):
         self.end_time = time.clock()
         self.interval = self.end_time - self.start_time

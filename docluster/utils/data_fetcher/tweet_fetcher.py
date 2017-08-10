@@ -1,10 +1,8 @@
 import tweepy
-
-from ..constants.language import Language
-from .data_fetcher import DataFetcher
+from docluster.utils.constants import Language
 
 
-class TweetFetcher(DataFetcher):
+class TweetFetcher(object):
     def __init__(self, queries, access_token, access_secret, consumer_key, consumer_secret, n_limit_per_query=100, n_limit_total=1000, suffix='', filterNone=False, language=Language.english, do_browse=False):
         self.queries = queries
         self.n_limit_per_query = n_limit_per_query

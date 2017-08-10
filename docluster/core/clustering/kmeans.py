@@ -4,12 +4,14 @@ from math import *
 import pandas as pd
 
 import numpy as np
-from utils import DistanceMetric, Grapher
+from docluster.core import Model
+from docluster.utils.constants import DistanceMetric
+from docluster.utils.visual import Grapher
 
 
-class KMeans(object):
+class KMeans(Model):
 
-    def __init__(self, k, dist_metric=DistanceMetric.eucledian, eps=1e-4, do_plot=False):
+    def __init__(self, k, dist_metric=DistanceMetric.eucledian, eps=1e-4, do_plot=False, model_name='KMeans'):
         """
             An implementation of K-Means clustering algorithm.
 
@@ -25,6 +27,8 @@ class KMeans(object):
                 between the last epoch and the current epoch.
             do_plot : bool
                 If to plot a voronoi diagram of the clusters after fit.
+            model_name : str
+                Name of the model that will be used for printing and saving purposes.
 
             Attributes:
             -----------
@@ -44,6 +48,7 @@ class KMeans(object):
         self.clusters = None
         self.centroids = None
         self.cost = None
+        self.model_name = model_name
 
     def fit(self, data):
         """
@@ -78,16 +83,18 @@ class KMeans(object):
             # For every cluster calculates the distance to data points and add to the total cost
             for j in range(self.k):
                 centroids[j] = np.mean(data[clusters == j], axis=0)
+
             cost = np.sum(
                 np.square(data - centroids[clusters.astype('int64')]))
 
         self.centroids, self.clusters, self.cost = centroids, clusters, cost
 
         if self.do_plot:
-            Grapher().plot_voronoi(data, n_clusters=self.k, clusters=clusters,
+
+            Grapher().plot_voronoi(PCA().fit(data), n_clusters=self.k, clusters=clusters,
                                    centroids=centroids, title="K-means clustering with k= " + str(self.k))
 
-        return (centroids, clusters, cost)
+        return clusters
 
     def get_distances_btw_centroids(self, dist_metric=None, do_plot=False):
         """

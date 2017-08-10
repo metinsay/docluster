@@ -1,14 +1,17 @@
 import pandas as pd
 
 import numpy as np
-from utils import FileFetcher, FileSaver, FileType, Grapher
+from docluster.core import Model
+from docluster.core.preprocessing import Preprocessor
+from docluster.utils.constants import DistanceMetric, FileType
+from docluster.utils.data_fetcher import FileFetcher
+from docluster.utils.data_saver import FileSaver
+from docluster.utils.visual import Grapher
 
-from ..preprocessing import Preprocessor
 
+class TfIdf(Model):
 
-class TfIdf(object):
-
-    def __init__(self, n_words=10000, min_df=0.0, max_df=1.0, do_idf=True, preprocessor=Preprocessor(), do_plot=False):
+    def __init__(self, n_words=10000, min_df=0.0, max_df=1.0, do_idf=True, preprocessor=Preprocessor(), do_plot=False, model_name='TfIdf'):
         """ Initialize TfIdf
         n_words - the number of words that is going to be in the vocab, eliminating
                   less frequent words
@@ -17,6 +20,8 @@ class TfIdf(object):
         do_idf - do perform inverse document frequency
         preprocessor - the proproccessor that is going to tokenize the documents
         do_plot - do plot scatter plot after fitting
+        model_name : str
+            Name of the model that will be used for printing and saving purposes.
         """
 
         self.n_words = n_words
@@ -25,6 +30,7 @@ class TfIdf(object):
         self.do_idf = do_idf
         self.preprocessor = preprocessor
         self.do_plot = do_plot
+        self.model_name = model_name
 
         self.vocab = None
         self.tfidf_vector = None

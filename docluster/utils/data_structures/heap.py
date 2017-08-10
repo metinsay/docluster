@@ -21,7 +21,7 @@ class Heap(object):
     def get_max(self):
         return self.data[1] if len(self.data) > 1 else None
 
-    def pop_max(self):
+    def pop(self):
         # TODO: Implement Heap Pop Max
         pass
 

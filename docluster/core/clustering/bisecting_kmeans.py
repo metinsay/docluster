@@ -4,12 +4,14 @@ from math import *
 import pandas as pd
 
 import numpy as np
-from utils import DistanceMetric, Grapher
+from docluster.core import Model
+from docluster.utils.constants import DistanceMetric
+from docluster.utils.visual import Grapher
 
 from .kmeans import KMeans
 
 
-class BisectingKMeans(object):
+class BisectingKMeans(Model):
 
     def __init__(self, k, n_iterations=4, dist_metric=DistanceMetric.eucledian, eps=1e-4, do_plot=False):
         """

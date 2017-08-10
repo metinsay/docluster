@@ -1,2 +1,1 @@
-from .doc2vec import *
-from .tfidf import *
+from .tfidf import TfIdf

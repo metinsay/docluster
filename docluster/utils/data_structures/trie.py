@@ -104,7 +104,8 @@ class Trie(object):
         words = []
 
         def iterate(word, trie):
-        """Recursive helper function to iterate."""
+            """Recursive helper function to iterate."""
+
             if trie:
                 if trie.frequency > 0:
                     words.append([word, trie.frequency])
@@ -141,6 +142,22 @@ class Trie(object):
         return [word for word, freq in words[:n_suggestions]]
 
     def autocorrect(self, prefix, n_suggestions=5):
+        """
+            Autocorrect the prefix.
+
+            Paramaters:
+            -----------
+            prefix : str
+                Prefix that the autocorrection will be applied on.
+            n_suggestions : int
+                Number of autocorrect suggestions to be returned.
+
+            Return:
+            -------
+            suggestions : list(str)
+                Autocorrect suggestions.
+        """
+        # FIXME: Make autocorrect cleaner and stronger
         chars = list('abcdefghijklmnopqrstuvwxyz')
         words = set([])
         autocomplete = self.autocomplete(prefix, n_suggestions)

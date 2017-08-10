@@ -1,2 +1,1 @@
-from .browser import *
-from .grapher import *
+from .grapher import Grapher

@@ -1,9 +1,7 @@
 import pandas as pd
-from sklearn.decomposition import TruncatedSVD
 
 import matplotlib.pyplot as plt
 import numpy as np
-# from core import PCA
 from scipy.spatial import Voronoi, voronoi_plot_2d
 
 

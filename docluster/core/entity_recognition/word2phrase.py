@@ -3,17 +3,18 @@ from itertools import tee
 import pandas as pd
 
 import numpy as np
+from docluster.core import Model
+from docluster.core.preprocessing import Preprocessor, TokenFilter
 
-from ..preprocessing import Preprocessor, TokenFilter
 
+class Word2Phrase(Model):
 
-class Word2Phrase(object):
-
-    def __init__(self, min_count=20, threshold=0.000, max_phrase_len=2, delimiter='_', preprocessor=None):
+    def __init__(self, min_count=20, threshold=0.000, max_phrase_len=2, delimiter='_', preprocessor=None, model_name='Word2Phrase'):
         self.threshold = threshold
         self.max_phrase_len = max_phrase_len
         self.min_count = min_count
         self.delimiter = delimiter
+        self.model_name = model_name
 
         if preprocessor is None:
             additional_filters = [lambda token: len(token) == 1]
@@ -52,7 +53,7 @@ class Word2Phrase(object):
                         if all([self.delimiter.join(phrase) not in prev_phrase for prev_phrase in list(self.phrases)]):
                             self.phrases.add(self.delimiter.join(phrase))
 
-        return self.phrases
+        return self.phrase
 
     def put_phrases_in_documents(self, documents):
         for phrase in self.phrases:

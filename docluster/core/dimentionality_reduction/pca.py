@@ -1,9 +1,10 @@
 import numpy as np
+from docluster.core import Model
 
 
-class PCA(object):
+class PCA(Model):
 
-    def __init__(self, n_components=2):
+    def __init__(self, n_components=2, model_name='PCA'):
         """
             An implementation of Principal Components Analysis.
 
@@ -20,6 +21,7 @@ class PCA(object):
 
         self.n_components = n_components
         self.eig_vectors = None
+        self.model_name = model_name
 
     def fit(self, data):
         """
@@ -35,9 +37,9 @@ class PCA(object):
             reduced_data : list(list(float))
                 The pricipal components of data reduced to the n_components.
         """
-
         # Estimate the covariance matrix
-        mean = np.mean(data, axis=0)
+        n_points = len(data)
+        mean = np.tile(np.mean(data, axis=0), (n_points, 1))
         centered_data = data - mean
         scatter_matrix = np.dot(centered_data.T, centered_data)
 
@@ -46,6 +48,5 @@ class PCA(object):
         sorted_eig_indices = eig_values.argsort()[::-1]
         sorted_eig_vectors = eig_vectors[:, sorted_eig_indices]
         self.eig_vectors = sorted_eig_vectors[:, range(self.n_components)]
-
         # Matrix multiple the eigenvector with the data
         return np.dot(centered_data, self.eig_vectors)

@@ -1,7 +1,6 @@
 import pandas as pd
 
 import numpy as np
-from utils import Graph, Timer, graphalg, seqeuencealg
 
 
 class Flow(object):
@@ -15,6 +14,11 @@ class Flow(object):
         if graphalg.check_cycles(self.graph):
             raise ValueError("The flow shouldn't have loops")
 
+        branches = graphalg.get_disjoint_subgraphs(self.graph)
+        print(branches, 'a')
+        for branch in branches:
+            print(graphalg.get_mother_vertex(branch), 'b')
+        return
         prevData = data
 
         models = []

@@ -1,10 +1,6 @@
-from .avl import *
-from .blocking_queue import *
-from .bst import *
-from .graph import *
-from .heap import *
-from .huffman_tree import *
-from .linked_list import *
-from .queue import *
-from .trie import *
-from .tst import *
+from .bst import BST
+from .graph import Edge, Graph
+from .heap import Heap
+from .huffman_tree import HuffmanTree
+from .linked_list import LinkedList
+from .trie import Trie

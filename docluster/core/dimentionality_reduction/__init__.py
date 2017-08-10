@@ -1,3 +1,1 @@
-from .autoencoder import *
-from .pca import *
-from .tsne import *
+from .pca import PCA

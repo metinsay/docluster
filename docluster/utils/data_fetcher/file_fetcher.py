@@ -2,7 +2,7 @@ import os.path
 
 import pandas as pd
 
-from ..constants.file_type import *
+from docluster.utils.constants import FileType
 
 
 class FileFetcher(object):

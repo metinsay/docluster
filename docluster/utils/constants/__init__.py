@@ -1,3 +1,3 @@
-from .distance_metric import *
-from .file_type import *
-from .language import *
+from .distance_metric import DistanceMetric
+from .file_type import FileType
+from .language import Language

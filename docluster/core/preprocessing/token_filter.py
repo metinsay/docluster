@@ -1,7 +1,7 @@
 import string
 
 import stop_words as sw
-from utils import Language
+from docluster.utils.constants import Language
 
 
 class TokenFilter(object):

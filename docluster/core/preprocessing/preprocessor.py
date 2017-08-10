@@ -1,16 +1,13 @@
 import numpy as np
 from bs4 import BeautifulSoup
+from docluster.core import Model
+from docluster.utils.constants import Language
 from nltk import sent_tokenize, word_tokenize
-from utils import Language
 
 from .token_filter import TokenFilter
 
 
-def tokenizer(text, stop_words, stem_func): return stem(
-    filter_stop_words(tokenize(text), stop_words), stem_func)
-
-
-class Preprocessor(object):
+class Preprocessor(Model):
 
     def __init__(self, language=Language.english, lower=True, parse_html=True, token_filter=TokenFilter(language=Language.english), do_stem=False, do_lemmatize=False):
 

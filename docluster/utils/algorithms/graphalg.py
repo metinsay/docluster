@@ -97,6 +97,7 @@ def johnson(graph):
 
 def get_disjoint_subgraphs(graph):
     vertices = graph.vertices
+    vertex2color = {}
     visited = set()
     colorings = {}
     subgraph_index = 0
@@ -104,13 +105,19 @@ def get_disjoint_subgraphs(graph):
         unvisited = vertices - visited
         source = random.choice(list(unvisited))
         for vertex in bfs_traverse(graph, source):
-            coloring = colorings.get(subgraph_index, set())
-            coloring.add(vertex)
-            colorings[subgraph_index] = coloring
-            visited.add(vertex)
+            if vertex in unvisited:
+                coloring = colorings.get(subgraph_index, set())
+                coloring.add(vertex)
+
+                colorings[subgraph_index] = coloring
+                visited.add(vertex)
 
         subgraph_index += 1
-    return colorings
+    print(colorings)
+    subgraphs = []
+    for color, vertices in colorings.items():
+        subgraphs.append(graph.subgraph_with_vertices(vertices))
+    return subgraphs
 
 
 """ OTHER """
@@ -121,9 +128,9 @@ def get_disjoint_subgraphs(graph):
 def get_mother_vertex(graph):
     vertices = graph.vertices
     visited = set()
+    candidate = None
     for source in list(vertices):
         for vertex in dfs_traverse(graph, source):
-            print(vertex)
             visited.add(vertex)
             if len(vertices) == len(visited):
                 candidate = source
@@ -131,7 +138,7 @@ def get_mother_vertex(graph):
         else:
             continue
         break
-    print(visited)
+
     visited = set()
     for vertex in dfs_traverse(graph, candidate):
         visited.add(vertex)

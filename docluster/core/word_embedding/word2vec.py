@@ -10,15 +10,18 @@ import pandas as pd
 
 import numpy as np
 import tensorflow as tf
+from docluster.core import Model
+from docluster.core.document_embedding import TfIdf
+from docluster.core.preprocessing import Preprocessor, TokenFilter
+from docluster.utils.constants import DistanceMetric, FileType
+from docluster.utils.data_fetcher import FileFetcher
+from docluster.utils.data_saver import FileSaver
 from scipy.special import expit
-from utils import DistanceMetric, FileFetcher, FileSaver, FileType
 
-from ..document_embedding import TfIdf
-from ..preprocessing import Preprocessor, TokenFilter
 from .word_embeddings import WordEmbeddings
 
 
-class Word2Vec(object):
+class Word2Vec(Model):
 
     def __init__(self, preprocessor=None, n_skips=16, n_negative_samples=100, n_words=10000, embedding_size=100, batch_size=32, window_size=10, learning_rate=0.025, n_epochs=1, n_workers=4, do_plot=False):
         """

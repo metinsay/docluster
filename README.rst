@@ -17,7 +17,7 @@ docluster
      :target: https://pyup.io/repos/github/metinsay/docluster/
      :alt: Updates
 
-**Docluster** is an open source project that aims to bring the natural language processing community together. With increasing processing and advanced machine learning algorithms, NLP became a hot topic recently. Lots of research project are being conducted simultaniously. Keeping up with these advancements is nearly impossible for an individual. Doculuster tries to bring all studies in all countries into a library that can be easily utilized. 
+**Docluster** is an open source project that aims to bring the natural language processing community together. With increasing processing power and advances in machine learning algorithms, NLP became the hot topic recently. Lots of research projects are being conducted simultaneously. Keeping up with these advancements is nearly impossible for an individual. Docluster tries to bring all studies in all countries into a library that can be easily utilized by anyone. 
 
 **You want to contribute? Great! See Contribute_ section.**
 

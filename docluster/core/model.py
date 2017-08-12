@@ -2,9 +2,14 @@ class Model(object):
 
     def __init__(self, model_name):
         self.model_name = model_name
+        self.func = lambda: None
+
+    def __init__(self, func, model_name):
+        self.model_name = model_name
+        self.func = func
 
     def fit(self, data):
-        pass
+        return self.func()
 
     def __str__(self):
         return self.model_name
@@ -16,4 +21,4 @@ class Model(object):
         return False  # fixme
 
     def __hash__(self):
-        return 3
+        return 3  # fixme

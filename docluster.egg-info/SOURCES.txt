@@ -1,0 +1,17 @@
+AUTHORS.rst
+CONTRIBUTING.rst
+HISTORY.rst
+LICENSE
+MANIFEST.in
+README.rst
+setup.cfg
+setup.py
+docluster/__init__.py
+docluster.egg-info/PKG-INFO
+docluster.egg-info/SOURCES.txt
+docluster.egg-info/dependency_links.txt
+docluster.egg-info/not-zip-safe
+docluster.egg-info/requires.txt
+docluster.egg-info/top_level.txt
+tests/__init__.py
+tests/test_docluster.py

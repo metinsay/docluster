@@ -3,7 +3,7 @@
 
 """The setup script."""
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -12,7 +12,14 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    # TODO: put package requirements here
+    'numpy',
+    'pandas',
+    'matplotlib',
+    'scipy',
+    'nltk',
+    'gensim',
+    'bs4',
+    'sklearn'
 ]
 
 setup_requirements = [
@@ -27,8 +34,8 @@ test_requirements = [
 
 setup(
     name='docluster',
-    version='0.1.0',
-    description="A document clustering library",
+    version='0.0.1',
+    description="Open Source NLP Library",
     long_description=readme + '\n\n' + history,
     author="Metin Say",
     author_email='metin@mit.edu',

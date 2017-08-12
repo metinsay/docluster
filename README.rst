@@ -18,7 +18,7 @@ docluster
      :alt: Updates
 |
 | **Docluster** is an open source project that aims to bring the natural language processing community together. The demand for NLP increases each year as processing power increases and machine learning advances. As a result, many research projects are conducted on NLP and related subjects. Keeping up with these advancements from all around the world is nearly impossible. Docluster tries to bring all studies from all countries into a library that can be easily applied, visualized and deployed.
-
+|
 | **You want to contribute? Great! See** Contribute_ **section.**
 
 * Free software: MIT license

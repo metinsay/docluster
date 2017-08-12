@@ -14,11 +14,11 @@ class Flow(object):
         if graphalg.check_cycles(self.graph):
             raise ValueError("The flow shouldn't have loops")
 
-        branches = graphalg.get_disjoint_subgraphs(self.graph)
-        print(branches, 'a')
-        for branch in branches:
-            print(graphalg.get_mother_vertex(branch), 'b')
-        return
+        # branches = graphalg.get_disjoint_subgraphs(self.graph)
+        # print(branches, 'a')
+        # for branch in branches:
+        #     print(graphalg.get_mother_vertex(branch), 'b')
+        # return
         prevData = data
 
         models = []
@@ -38,8 +38,9 @@ class Flow(object):
 
         if self.do_analytics:
             analytics = pd.DataFrame({'Time (s)': times, 'Return shape': shapes})
-            analytics.index = models_in_execution_order
+            analytics.index = models
             print(analytics)
+
         return prevData
 
     def link(self, start_model, end_model):

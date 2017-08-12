@@ -70,8 +70,8 @@ Release History
 * 0.0.1
     * Work on progress
 
-Contact
---------
+Maintainers
+------------
 
 **Metin Say -** MIT '19. metin@mit.edu
 

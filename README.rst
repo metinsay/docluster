@@ -58,7 +58,7 @@ Installation
 
 **The project is under heavy construction currently.**
 
-
+.. _Contribute:
 Contribute
 -----------
 
@@ -75,6 +75,7 @@ Contact
 
 **Metin Say -** MIT '19. metin@mit.edu
 
+See a list of all contributers at AUTHORS.rst_.
 
 Credits
 --------
@@ -84,4 +85,4 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 .. _Contributing.rst: ./CONTRIBUTING.rst
-.. _Contribute: Contribute
+.. _AUTHORS.rst_: ./AUTHORS.rst

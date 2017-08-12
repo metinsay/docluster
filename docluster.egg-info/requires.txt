@@ -1,8 +1,0 @@
-numpy
-pandas
-matplotlib
-scipy
-nltk
-gensim
-bs4
-sklearn

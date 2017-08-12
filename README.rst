@@ -27,7 +27,7 @@ docluster
 Vision
 -------
 
-Natural lanaguage processing space is populated with many individual and orgnizational projects that provide specific needs of consumer. Unfortunately none so far tries to serve future innovation. Docluster aims to fill this void by being:
+Natural lanaguage processing space is populated with many individual and organizational projects that provide specific needs of consumer. Unfortunately none so far tries to serve future innovation. Docluster aims to fill this void by being:
 
 **Free:** Many projects that provide powerful NLP tools come with a price attach to it (usually a monthly subscription or a per request). Even seeing the 'Pricing' tab on the website of these projects, discourages people who are genuinely interested to contribute. Docluster aims to break this wall by providing these tools and many more with open source code.
 

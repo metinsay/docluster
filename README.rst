@@ -1,5 +1,5 @@
 =========
-docluster
+.. image:: ./logo_docluster.png
 =========
 
 

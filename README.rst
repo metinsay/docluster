@@ -1,6 +1,6 @@
-=========
+
 .. image:: ./logo_docluster.png
-=========
+
 
 
 .. image:: https://img.shields.io/pypi/v/docluster.svg

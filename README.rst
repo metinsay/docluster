@@ -1,6 +1,6 @@
 
 .. image:: ./logo_docluster.png
-
+.. class:: center
 
 
 .. image:: https://img.shields.io/pypi/v/docluster.svg

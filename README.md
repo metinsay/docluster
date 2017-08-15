@@ -8,7 +8,7 @@
 
 **Docluster** is an open source project that aims to bring the natural language processing community together. The demand for NLP increases each year as processing power increases and machine learning advances. As a result, many research projects are conducted on NLP and related subjects. Keeping up with these advancements from all around the world is nearly impossible. Docluster tries to bring all studies from all countries into a library that can be easily applied, visualized and deployed.
 
-**You want to contribute? Great! See [Contribute](##Contribute) section.**
+**You want to contribute? Great! See [Contribute](./CONTRIBUTING.rst) section.**
 
 * Free software: MIT license
 * Built with: Python - numpy, pandas, matplotlib
@@ -84,7 +84,7 @@ Natural lanaguage processing space is populated with many individual and organiz
 
 ## Contribute
 
-We really expect this project to be the project of the community. Therefore, we welcome EVERY contribution from everyone that are interested in NLP or related areas. Please check out the [CONTRIBUTING.rst](./CONTRIBUTING.rst). If you have any questions after reading the documents, contact the admins of the project.
+We really expect this project to be the project of the community. Therefore, we welcome EVERY contribution from everyone that are interested in NLP or related areas. Please check out [how to contribute](./CONTRIBUTING.rst). If you have any questions after reading the documents, contact the admins of the project.
 
 ## Release History
 
@@ -95,4 +95,4 @@ We really expect this project to be the project of the community. Therefore, we 
 
 **Metin Say -** MIT '19. metin@mit.edu
 
-See a list of all contributers at AUTHORS.rst_.
+See a list of all contributers at [Authors](AUTHORS.rst).

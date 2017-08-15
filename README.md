@@ -1,32 +1,21 @@
 <p align="center">
 <img src="./img/logo_docluster.png">
-</p>
 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[![Pypi](https://img.shields.io/pypi/v/docluster.svg)](https://pypi.python.org/pypi/docluster)
+[![Travis-Cli](https://img.shields.io/travis/metinsay/docluster.svg)](https://travis-ci.org/metinsay/docluster)
+[![GitHub Issues](https://img.shields.io/github/issues/metinsay/docluster.svg)](https://github.com/metinsay/docluster/issues)
+[![Documentation](https://readthedocs.org/projects/docluster/badge/?version=latest)](https://docluster.readthedocs.io/en/latest/?badge=latest)
+[![Pyup](https://pyup.io/repos/github/metinsay/docluster/shield.svg)](https://pyup.io/repos/github/metinsay/docluster/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 <!-- | pypi       | travis-ci        | docs | pyup |
 | :-------------:|:-------------:| :-----:|:-----:|
 |  [![alt text](https://img.shields.io/pypi/v/docluster.svg "pypi")](https://pypi.python.org/pypi/docluster)   | [![alt text](https://img.shields.io/travis/metinsay/docluster.svg "travis-ci")](https://travis-ci.org/metinsay/docluster) | [![alt text](https://readthedocs.org/projects/docluster/badge/?version=latest "Documentation")](https://docluster.readthedocs.io/en/latest/?badge=latest)| [![alt text](https://pyup.io/repos/github/metinsay/docluster/shield.svg "pyup")](https://pyup.io/repos/github/metinsay/docluster/) | -->
-<center>
-<table align="center">
-    <thead>
-        <tr>
-            <th align="center">pypi</th>
-            <th align="center">travis-ci</th>
-            <th align="center">docs</th>
-            <th align="center">pyup</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td align="center"><a href="https://pypi.python.org/pypi/docluster"><img src="https://img.shields.io/pypi/v/docluster.svg"></a></td>
-            <td align="center"><a href="https://travis-ci.org/metinsay/docluster"><img src="https://img.shields.io/travis/metinsay/docluster.svg"></a></td>
-            <td align="center"><a href="https://docluster.readthedocs.io/en/latest/?badge=latest"><img src="https://readthedocs.org/projects/docluster/badge/?version=latest"></a></td>
-            <td align="center"> <a href="https://pyup.io/repos/github/metinsay/docluster/"><img src="https://pyup.io/repos/github/metinsay/docluster/shield.svg"></a></td>
-        </tr>
-    </tbody>
-</table>
-</center>
 
+
+
+</p>
 **Docluster** is an open source project that aims to bring the natural language processing community together. The demand for NLP increases each year as processing power increases and machine learning advances. As a result, many research projects are conducted on NLP and related subjects. Keeping up with these advancements from all around the world is nearly impossible. Docluster tries to bring all studies from all countries into a library that can be easily applied, visualized and deployed.
 
 **You want to contribute? Great! See [Contribute](./CONTRIBUTING.rst) section.**
@@ -59,13 +48,13 @@ Natural lanaguage processing space is populated with many individual and organiz
 
 * **Docluster Package Manager** (DPM) gives access to:
 
-    * Pre-trained models
+    * Pre-trained models</br></br>
 
     ```python
     # Word2Vec pre-trained with English Wikipedia
     word2vec = DPM.download_model('docluster/word2vec_en_wikipedia').model
     ```
-    * Corpus Catalog
+    * Corpus Catalog</br></br>
 
     ```python
     # Random half of English Wikipedia documents

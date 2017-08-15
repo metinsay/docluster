@@ -1,10 +1,11 @@
-
-![alt text](./img/logo_docluster.png "docluster logo")
-
+<p align="center">
+<img width=80% src="./img/logo_docluster.png">
+</p>
 
 | pypi       | travis-ci        | docs | pyup |
 | ------------- |:-------------:| -----:|-----:|
 |  [![alt text](https://img.shields.io/pypi/v/docluster.svg "pypi")](https://pypi.python.org/pypi/docluster)   | [![alt text](https://img.shields.io/travis/metinsay/docluster.svg "travis-ci")](https://travis-ci.org/metinsay/docluster) | [![alt text](https://readthedocs.org/projects/docluster/badge/?version=latest "Documentation")](https://docluster.readthedocs.io/en/latest/?badge=latest)| [![alt text](https://pyup.io/repos/github/metinsay/docluster/shield.svg "pyup")](https://pyup.io/repos/github/metinsay/docluster/) |
+
 
 **Docluster** is an open source project that aims to bring the natural language processing community together. The demand for NLP increases each year as processing power increases and machine learning advances. As a result, many research projects are conducted on NLP and related subjects. Keeping up with these advancements from all around the world is nearly impossible. Docluster tries to bring all studies from all countries into a library that can be easily applied, visualized and deployed.
 

@@ -49,12 +49,12 @@ Upcoming Features
 
 * Docluster Package Manager (DPM) gives access to:
 
-Pre-trained models::
+    * Pre-trained models::
 
     # Word2Vec pre-trained with English Wikipedia
     word2vec = DPM.download_model('docluster/word2vec_en_wikipedia').model
 
-Corpus catalog::
+    * Corpus catalog::
 
     # Random half of English Wikipedia documents
     wikis = DPM.download_corpus('docluster/wikipedia_en', shuffle=True, fraction=0.5).text

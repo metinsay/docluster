@@ -2,7 +2,7 @@
 <img src="./img/logo_docluster.png">
 </p>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![Pypi](https://img.shields.io/pypi/v/docluster.svg)](https://pypi.python.org/pypi/docluster)
 [![Travis-Cli](https://img.shields.io/travis/metinsay/docluster.svg)](https://travis-ci.org/metinsay/docluster)
 [![GitHub Issues](https://img.shields.io/github/issues/metinsay/docluster.svg)](https://github.com/metinsay/docluster/issues)

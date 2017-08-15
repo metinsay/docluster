@@ -1,25 +1,30 @@
 
 .. image:: ./logo_docluster.png
-.. class:: center
+        :align: center
 
+|
 
 .. image:: https://img.shields.io/pypi/v/docluster.svg
         :target: https://pypi.python.org/pypi/docluster
+        :align: center
 
 .. image:: https://img.shields.io/travis/metinsay/docluster.svg
         :target: https://travis-ci.org/metinsay/docluster
+        :align: center
 
 .. image:: https://readthedocs.org/projects/docluster/badge/?version=latest
         :target: https://docluster.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
+        :align: center
 
 .. image:: https://pyup.io/repos/github/metinsay/docluster/shield.svg
      :target: https://pyup.io/repos/github/metinsay/docluster/
      :alt: Updates
+     :align: center
 |
 | **Docluster** is an open source project that aims to bring the natural language processing community together. The demand for NLP increases each year as processing power increases and machine learning advances. As a result, many research projects are conducted on NLP and related subjects. Keeping up with these advancements from all around the world is nearly impossible. Docluster tries to bring all studies from all countries into a library that can be easily applied, visualized and deployed.
 |
-| **You want to contribute? Great! See** Contribute_ **section.**
+| **You want to contribute? Great! See **Contribute_ **section.**
 |
 * Free software: MIT license
 * Built with: Python - numpy, pandas, matplotlib
@@ -39,18 +44,49 @@ Natural lanaguage processing space is populated with many individual and organiz
 
 **Easy to use:** Many NLP models require some sort of training step before any usage. Docluster gives the user the option to train their models or use a pre-trained model. It comes with a pre-trained model catalog where users can programmatically download or upload pre-trained model.
 
-Features
----------
+Upcoming Features
+------------------
 
-* Most recent research models as well as standard ones like Tf-Idf
+* Most recent research models::
 
-* Pre-trained models catalog
+    ft = FastText()
+    embeddings = ft.fit(docs)
 
-* Flow - A pipelining tool where the graph doesn't need to be a chain.
+* Docluster Package Manager (DPM) gives access to:
 
-* All-languages support
+    * Pre-trained models::
 
-* Built in visualization
+        # Word2Vec pre-trained with English Wikipedia
+        word2vec = DPM.download_model('docluster/word2vec_en_wikipedia').model
+
+    * Corpus catalog::
+
+        # Random half of English Wikipedia documents
+        wikis = DPM.download_corpus('docluster/wikipedia_en', shuffle=True, fraction=0.5).text
+
+
+* Flow - A powerful pipelining tool with branching. Underlying graph can consist of unconnected subgraphs.::
+
+    pre = Preprocessor()
+    tfidf = TfIdf(min_df=0.2, max_df=0.5)
+    km = BisectingKMeans(2, dist_metric=DistanceMetric.manhattan)
+    db = DBScan()
+
+    #               km
+    # pre - tfidf <
+    #               db
+
+    flo = Flow(do_thread_branches=True)
+    flo.chain(pre, tfidf, km)
+    flo.link(tfidf, db)
+    km_clusters, db_clusters = flo.fit(docs)
+
+
+* Built in visualization::
+
+    # Plots voronoi diagram
+    km = Kmeans(4, do_plot=True)
+    clusters = km.fit(docs)
 
 
 Installation

@@ -1,26 +1,21 @@
 
 .. image:: ./logo_docluster.png
-        :align: center
 
 |
 
 .. image:: https://img.shields.io/pypi/v/docluster.svg
         :target: https://pypi.python.org/pypi/docluster
-        :align: center
 
 .. image:: https://img.shields.io/travis/metinsay/docluster.svg
         :target: https://travis-ci.org/metinsay/docluster
-        :align: center
 
 .. image:: https://readthedocs.org/projects/docluster/badge/?version=latest
         :target: https://docluster.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
-        :align: center
 
 .. image:: https://pyup.io/repos/github/metinsay/docluster/shield.svg
      :target: https://pyup.io/repos/github/metinsay/docluster/
      :alt: Updates
-     :align: center
 |
 | **Docluster** is an open source project that aims to bring the natural language processing community together. The demand for NLP increases each year as processing power increases and machine learning advances. As a result, many research projects are conducted on NLP and related subjects. Keeping up with these advancements from all around the world is nearly impossible. Docluster tries to bring all studies from all countries into a library that can be easily applied, visualized and deployed.
 |
@@ -54,15 +49,15 @@ Upcoming Features
 
 * Docluster Package Manager (DPM) gives access to:
 
-    * Pre-trained models::
+Pre-trained models::
 
-        # Word2Vec pre-trained with English Wikipedia
-        word2vec = DPM.download_model('docluster/word2vec_en_wikipedia').model
+    # Word2Vec pre-trained with English Wikipedia
+    word2vec = DPM.download_model('docluster/word2vec_en_wikipedia').model
 
-    * Corpus catalog::
+Corpus catalog::
 
-        # Random half of English Wikipedia documents
-        wikis = DPM.download_corpus('docluster/wikipedia_en', shuffle=True, fraction=0.5).text
+    # Random half of English Wikipedia documents
+    wikis = DPM.download_corpus('docluster/wikipedia_en', shuffle=True, fraction=0.5).text
 
 
 * Flow - A powerful pipelining tool with branching. Underlying graph can consist of unconnected subgraphs.::
@@ -72,9 +67,9 @@ Upcoming Features
     km = BisectingKMeans(2, dist_metric=DistanceMetric.manhattan)
     db = DBScan()
 
-    #               km
-    # pre - tfidf <
-    #               db
+    # pre - tfidf - kmeans
+    #            \
+    #             db
 
     flo = Flow(do_thread_branches=True)
     flo.chain(pre, tfidf, km)

@@ -1,5 +1,5 @@
 
-![alt text](./logo_docluster.png "docluster logo")
+![alt text](./img/logo_docluster.png "docluster logo")
 
 
 | pypi       | travis-ci        | docs | pyup |

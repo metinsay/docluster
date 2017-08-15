@@ -47,7 +47,7 @@ Upcoming Features
     ft = FastText()
     embeddings = ft.fit(docs)
 
-* Docluster Package Manager (DPM) gives access to:::
+* Docluster Package Manager (DPM) gives access to::
 
     """ Pre-trained models """
 
@@ -60,7 +60,7 @@ Upcoming Features
     wikis = DPM.download_corpus('docluster/wikipedia_en', shuffle=True, fraction=0.5).text
 
 
-* Flow - A powerful pipelining tool with branching. Underlying graph can consist of unconnected subgraphs.::
+* Flow - A powerful pipelining tool with branching. Underlying graph can consist of unconnected subgraphs. ::
 
     pre = Preprocessor()
     tfidf = TfIdf(min_df=0.2, max_df=0.5)

@@ -1,5 +1,5 @@
 <p align="center">
-<img width=20% src="./img/logo_docluster.png">
+<img width=30% src="./img/logo_docluster.png">
 </p>
 
 <p align="center">

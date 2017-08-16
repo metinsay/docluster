@@ -87,6 +87,13 @@ Natural lanaguage processing space is populated with many individual and organiz
 
 **The project is under heavy construction currently.**
 
+## New Features
+
+You can up the features you want `docluster` to have. Besides the current list, if you have any features you want, please add to the list.
+
+[![Feature Requests](http://feathub.com/metinsay/docluster?format=svg)](http://feathub.com/metinsay/docluster)
+
+
 ## Contribute
 
 We really expect this project to be the project of the community. Therefore, we welcome EVERY contribution from everyone that are interested in NLP or related areas. Please check out [how to contribute](./CONTRIBUTING.rst). If you have any questions after reading the documents, contact the admins of the project.
@@ -100,4 +107,8 @@ We really expect this project to be the project of the community. Therefore, we 
 
 **Metin Say -** MIT '19. metin@mit.edu
 
-See a list of all contributers at [Authors](AUTHORS.rst).
+See a list of all contributers at [Authors](AUTHORS.md).
+
+## Puzzle
+
+Hint 1: Do not ignore me!

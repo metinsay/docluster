@@ -6,7 +6,7 @@
 [![Pypi](https://img.shields.io/pypi/v/docluster.svg)](https://pypi.python.org/pypi/docluster)
 [![Travis-Cli](https://img.shields.io/travis/metinsay/docluster.svg)](https://travis-ci.org/metinsay/docluster)
 [![GitHub Issues](https://img.shields.io/github/issues/metinsay/docluster.svg)](https://github.com/metinsay/docluster/issues)
-[![Documentation](https://readthedocs.org/projects/docluster/badge/?version=latest)](https://docluster.readthedocs.io/en/latest/?badge=latest)
+[![Documentation](https://readthedocs.org/projects/docluster/badge/?version=latest)](https://docluster.re˜t/?badge=latest)
 [![Pyup](https://pyup.io/repos/github/metinsay/docluster/shield.svg)](https://pyup.io/repos/github/metinsay/docluster/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
@@ -25,7 +25,7 @@ Natural language processing space is populated with many individual and organiza
 
 **Open to contributions:** Large organizations such as Google, Facebook, MIT are the leading most of the research projects in NLP. However, there are many individuals who are making innovative contributions to the community. `docluster` aims to be a platform for these individuals. All the credit still stay with the individual that invented the new model.
 
-**All-language support:** Although language is a major factor in NLP, most efforts are put into more common languages like English. However, there are research projects in other languages as well and these projects are usually conducted in their respective country. `ocluster` tries to join all these research projects by inviting people from all around the world to contribute.
+**All-language support:** Although language is a major factor in NLP, most efforts are put into more common languages like English. However, there are research projects in other languages as well and these projects are usually conducted in their respective country. `docluster` tries to join all these research projects by inviting people from all around the world to contribute.
 
 **Easy to use:** Many NLP models require some sort of training step before any usage. `docluster` gives the user the option to train their models or use a pre-trained model. It comes with a pre-trained model catalog where users can programmatically download or upload pre-trained model.
 
@@ -44,13 +44,13 @@ Natural language processing space is populated with many individual and organiza
 
     ```python
     # Word2Vec pre-trained with English Wikipedia
-    word2vec = DPM.download_model('docluster/word2vec_en_wikipedia').model
+    word2vec = dpm.download_model('docluster/word2vec_en_wikipedia').model
     ```
     * Corpus Catalog</br></br>
 
     ```python
     # Random half of English Wikipedia documents
-    wikis = DPM.download_corpus('docluster/wikipedia_en', shuffle=True, fraction=0.5).text
+    wikis = dpm.download_corpus('docluster/wikipedia_en', shuffle=True, fraction=0.5).text
     ```
 
 * **Flow** - A powerful pipelining tool with branching. Underlying graph can consist of unconnected subgraphs.
@@ -100,6 +100,6 @@ See a list of all contributers at [Authors](AUTHORS.md).
 
 ## Puzzle
 
-Hint 1: Do not ignore me!
+**Hint 1:** Do not ignore me!
 
 (We recommend cloning the repo before starting the puzzle.)

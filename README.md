@@ -2,18 +2,13 @@
 <img width=30% src="./img/logo_docluster.png">
 </p>
 
-<html><head>
 <style type="text/css">
 .mycss
 {
 font-weight:normal;color:#34495E;letter-spacing:0pt;word-spacing:-7pt;font-size:49px;text-align:center;font-family:trebuchet MS, sans-serif;line-height:2;
 }
 </style>
-</head>
-<body>
 <p class="mycss">docluster</p>
-</body>
-</html>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![Pypi](https://img.shields.io/pypi/v/docluster.svg)](https://pypi.python.org/pypi/docluster)
 [![Travis-Cli](https://img.shields.io/travis/metinsay/docluster.svg)](https://travis-ci.org/metinsay/docluster)

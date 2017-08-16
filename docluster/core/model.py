@@ -22,3 +22,6 @@ class Model(object):
 
     def __hash__(self):
         return 3  # fixme
+
+
+# Here: https://www.codewars.com/kata/5993cb0701726fe98d00000d

@@ -11,23 +11,23 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 
-**Docluster** is an open source project that aims to bring the natural language processing community together. The demand for NLP increases each year as processing power increases and machine learning advances. As a result, many research projects are conducted on NLP and related subjects. Keeping up with these advancements from all around the world is nearly impossible. Docluster tries to bring all studies from all countries into a library that can be easily applied, visualized and deployed.
+**docluster** is an open source project that aims to bring the natural language processing community together. The demand for NLP increases each year as processing power increases and machine learning advances. As a result, many research projects are conducted on NLP and related subjects. Keeping up with these advancements from all around the world is nearly impossible. `docluster` tries to bring all studies from all countries into a library that can be easily applied, visualized and deployed.
 
 **You want to contribute? Great! See [Contribute](./CONTRIBUTING.rst) section.**
 
 ## Vision
 
-Natural lanaguage processing space is populated with many individual and organizational projects that provide specific needs of consumer. Unfortunately none so far tries to serve future innovation. Docluster aims to fill this void by being:
+Natural language processing space is populated with many individual and organizational projects that provide specific needs of consumer. Unfortunately none so far tries to serve future innovation. `docluster` aims to fill this void by being:
 
-**Free:** Many projects that provide powerful NLP tools come with a price attach to it (usually a monthly subscription or a per request). Even seeing the 'Pricing' tab on the website of these projects, discourages people who are genuinely interested to contribute. Docluster aims to break this wall by providing these tools and many more with open source code.
+**Free:** Many projects that provide powerful NLP tools come with a price attach to it (usually a monthly subscription or a per request). Even seeing the 'Pricing' tab on the website of these projects, discourages people who are genuinely interested to contribute. `docluster` aims to break this wall by providing these tools and many more with open source code.
 
-**Up-to-date on research:** There are so many research projects conducted that it is almost impossible to keep up. These projects are usually presented through a white paper and occasionally a repo separately created just for that particular research. Docluster aims to keep people up-to-date by bringing tools in a sigular repo.
+**Up-to-date on research:** There are so many research projects conducted that it is almost impossible to keep up. These projects are usually presented through a white paper and occasionally a repo separately created just for that particular research. `docluster` aims to keep people up-to-date by bringing tools in a singular repo.
 
-**Open to contributions:** Large organizations such as Google, Facebook, MIT are the leading most of the research projects in NLP. However, there are many individuals who are making innovative contributions to the community. Docluster aims to be a platform for these individuals. All the credit still stay with the individual that invented the new model.
+**Open to contributions:** Large organizations such as Google, Facebook, MIT are the leading most of the research projects in NLP. However, there are many individuals who are making innovative contributions to the community. `docluster` aims to be a platform for these individuals. All the credit still stay with the individual that invented the new model.
 
-**All-language support:** Although launguage is a major factor in NLP, most efforts are put into more common languages like English. However, there are research projects in other languages as well and these projects are usually conducted in their respective country. Docluster tries to join all these research projects by inviting people from all around the world to contribute.
+**All-language support:** Although language is a major factor in NLP, most efforts are put into more common languages like English. However, there are research projects in other languages as well and these projects are usually conducted in their respective country. `ocluster` tries to join all these research projects by inviting people from all around the world to contribute.
 
-**Easy to use:** Many NLP models require some sort of training step before any usage. Docluster gives the user the option to train their models or use a pre-trained model. It comes with a pre-trained model catalog where users can programmatically download or upload pre-trained model.
+**Easy to use:** Many NLP models require some sort of training step before any usage. `docluster` gives the user the option to train their models or use a pre-trained model. It comes with a pre-trained model catalog where users can programmatically download or upload pre-trained model.
 
 ## Upcoming Features
 
@@ -72,11 +72,11 @@ Natural lanaguage processing space is populated with many individual and organiz
     ```
 
 
-* Built in visualization
+* Built-in progress visualization
 
     ```python
-    # Plots voronoi diagram
-    km = Kmeans(4, do_plot=True)
+    # Plots a voronoi diagram that adapts to new cluster assignments on each epoch
+    km = Kmeans(4, plot_progress=True, plot_result=True)
     clusters = km.fit(docs)
     ```
 
@@ -84,21 +84,13 @@ Natural lanaguage processing space is populated with many individual and organiz
 
 **The project is under heavy construction currently.**
 
-## New Features
-
-You can up the features you want `docluster` to have. Besides the current list, if you have any features you want, please add to the list.
-
-[![Feature Requests](http://feathub.com/metinsay/docluster?format=svg)](http://feathub.com/metinsay/docluster)
-
-
 ## Contribute
 
 We really expect this project to be the project of the community. Therefore, we welcome EVERY contribution from everyone that are interested in NLP or related areas. Please check out [how to contribute](./CONTRIBUTING.rst). If you have any questions after reading the documents, contact the admins of the project.
 
 ## Release History
 
-* 0.0.1
-    * Work on progress
+Project is still in development.
 
 ## Maintainers
 
@@ -109,3 +101,5 @@ See a list of all contributers at [Authors](AUTHORS.md).
 ## Puzzle
 
 Hint 1: Do not ignore me!
+
+(We recommend cloning the repo before starting the puzzle.)

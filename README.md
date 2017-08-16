@@ -86,7 +86,7 @@ Natural language processing space is populated with many individual and organiza
 
 ## Contribute
 
-We really expect this project to be the project of the community. Therefore, we welcome EVERY contribution from everyone that are interested in NLP or related areas. Please check out [how to contribute](./CONTRIBUTING.rst). If you have any questions after reading the documents, contact the admins of the project.
+We really expect this project to be the project of the community. Therefore, we welcome EVERY contribution from everyone that are interested in NLP or related areas. Please check out [how to contribute](./CONTRIBUTING.md). If you have any questions after reading the documents, contact the admins of the project.
 
 ## Release History
 

@@ -15,9 +15,6 @@
 
 **You want to contribute? Great! See [Contribute](./CONTRIBUTING.rst) section.**
 
-* Free software: MIT license
-* Built with: Python - numpy, pandas, matplotlib
-
 ## Vision
 
 Natural lanaguage processing space is populated with many individual and organizational projects that provide specific needs of consumer. Unfortunately none so far tries to serve future innovation. Docluster aims to fill this void by being:
